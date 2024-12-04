@@ -27,6 +27,10 @@ services:
         uid: 1000
       context: .
       dockerfile: docker/php/Dockerfile
+    environment:
+      MYSQL_DATABASE: order_flow_db
+      MYSQL_USER: order_flow_user
+      MYSQL_PASSWORD: secret
     tty: true
     volumes:
       - ./backend:/var/www/html
@@ -50,8 +54,8 @@ services:
       - "3306:3306"
     volumes:
       - ./db_data:/var/lib/mysql
-#    networks:
-#      - backend
+    networks:
+      - backend
 
   redis:
     container_name: redis
