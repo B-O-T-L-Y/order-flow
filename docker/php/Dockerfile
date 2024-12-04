@@ -13,10 +13,17 @@ RUN apk --no-cache update && apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     libmcrypt-dev \
-    libxml2-dev
+    libxml2-dev \
+    autoconf \
+    g++ \
+    make
+
 
 RUN docker-php-ext-configure zip
 RUN docker-php-ext-install zip pdo_mysql
+
+RUN pecl install redis
+RUN docker-php-ext-enable redis
 
 # Settings user
 RUN addgroup -g $uid -S $user && \
@@ -36,7 +43,8 @@ COPY --chown=$user:$user ./backend /var/www/html
 RUN chmod u+x ./docker-entrypoint.sh
 
 # Run entrypoints
-ENTRYPOINT ["sh", "./docker-entrypoint.sh", "php-fpm"]
+ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
+CMD ["php-fpm"]
 
 # User
 USER $user

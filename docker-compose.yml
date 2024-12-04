@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     build:
       args:
-        user: myspa
+        user: order_flow
         uid: 1000
       context: .
       dockerfile: docker/nginx/Dockerfile
@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     build:
       args:
-        user: myspa
+        user: order_flow
         uid: 1000
       context: .
       dockerfile: docker/php/Dockerfile
@@ -42,8 +42,8 @@ services:
       context: .
       dockerfile: docker/mysql/Dockerfile
     environment:
-      MYSQL_DATABASE: myspa_db
-      MYSQL_USER: myspa_user
+      MYSQL_DATABASE: order_flow_db
+      MYSQL_USER: order_flow_user
       MYSQL_PASSWORD: secret
       MYSQL_ROOT_PASSWORD: secret
     ports:
