@@ -33,10 +33,10 @@ COPY --chown=$user:$user ./backend /var/www/html
 #COPY ./docker/php/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 
 # Make docker-entrypoint.sh as executable
-RUN #chmod u+x ./docker-entrypoint.sh
+RUN chmod u+x ./docker-entrypoint.sh
 
 # Run entrypoints
-#ENTRYPOINT ["sh", "./docker-entrypoint.sh", "php-fpm"]
+ENTRYPOINT ["sh", "./docker-entrypoint.sh", "php-fpm"]
 
 # User
 USER $user
