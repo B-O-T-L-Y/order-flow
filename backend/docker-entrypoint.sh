@@ -17,5 +17,9 @@ if [ -z "$APP_KEY" ] ; then
   php artisan key:generate
 fi
 
+if [ -f "$file" ] ; then
+  php artisan optimize
+fi
+
 exec "$@"
 #php artisan serve --host=0.0.0.0
