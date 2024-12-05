@@ -20,15 +20,15 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'status' => 'new',
+            'user_id' => User::query()->inRandomOrder()->first()->id ?? User::factory(),
+            'status' => fake()->randomElement(['new', 'in_progress', 'shipped', 'delivered']),
         ];
     }
 
     public function configure()
     {
         return $this->afterCreating(function (Order $order) {
-            $products = Product::factory()->count(3)->create();
+            $products = Product::factory()->count(rand(1, 5))->create();
 
             foreach ($products as $product) {
                 $amount = rand(1, 5);
