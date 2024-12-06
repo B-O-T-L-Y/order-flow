@@ -28,6 +28,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // TODO: add condition by local environment only
         Schema::dropIfExists('personal_access_tokens');
     }
 };

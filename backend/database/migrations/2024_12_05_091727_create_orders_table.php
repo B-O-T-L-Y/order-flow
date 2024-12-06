@@ -23,6 +23,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        // TODO: add condition by local environment only
         Schema::dropIfExists('order_product');
         Schema::dropIfExists('orders');
     }

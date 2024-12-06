@@ -50,6 +50,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // TODO: add condition by local environment only
         Schema::dropIfExists('jobs');
         Schema::dropIfExists('job_batches');
         Schema::dropIfExists('failed_jobs');

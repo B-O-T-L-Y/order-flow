@@ -29,6 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // TODO: add condition by local environment only
         Schema::dropIfExists('cache');
         Schema::dropIfExists('cache_locks');
     }
