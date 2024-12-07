@@ -9,7 +9,11 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('orders', OrderController::class);
-    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])
-        ->name('orders.status');
+    // Admins Routes
+    Route::middleware('admin')->group(function () {
+        Route::apiResource('orders', OrderController::class);
+    });
+
+    // User Routes
+    Route::apiResource('orders', OrderController::class)->except(['destroy']);
 });

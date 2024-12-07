@@ -9,6 +9,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
@@ -38,7 +39,7 @@ class OrderController extends Controller
         $userId = $request->user()->id;
         $order = $this->orderService->createOrder($request->validated(), $userId);
 
-        return response()->json(['data' => $order], 201);
+        return response()->json(['data' => $order], Response::HTTP_CREATED);
     }
 
     /**

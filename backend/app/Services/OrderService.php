@@ -9,6 +9,33 @@ use Illuminate\Support\Facades\DB;
 
 readonly class OrderService
 {
+    public function getUserOrdersWithFilters(array $filters, int $userId): LengthAwarePaginator
+    {
+        $query = Order::where('user_id', $userId)
+            ->with('products')
+            ->withSum('products as total_sum', 'order_product.total_price');
+
+        // Filtering by status
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        // Filtering by date
+        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+            $query->whereBetween('created_at', [$filters['start_date'], $filters['end_date']]);
+        }
+
+        if (!empty($filters['min_total'])) {
+            $query->where('total_sum', '>=', $filters['min_total']);
+        }
+
+        if (!empty($filters['max_total'])) {
+            $query->where('total_sum', '<=', $filters['max_total']);
+        }
+
+        return $query->paginate(10);
+    }
+
     /**
      * @throws \Throwable
      */
@@ -41,42 +68,5 @@ readonly class OrderService
         $order->update(['status' => $status]);
 
         return $order;
-    }
-
-//    public function getUserOrders(int $userId): iterable
-//    {
-//        return Order::where('user_id', $userId)->with('products')->get();
-//    }
-
-    public function getUserOrdersWithFilters(array $filters, int $userId): LengthAwarePaginator
-    {
-        $query = Order::where('user_id', $userId);
-
-        // Filtering by status
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
-
-        // Filtering by date
-        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
-            $query->whereBetween('created_at', [$filters['start_date'], $filters['end_date']]);
-        }
-
-        if (!empty($filters['min_total']) && !empty($filters['max_total'])) {
-            $query->whereHas('products', function ($subQuery) use ($filters) {
-                $subQuery->selectRaw('SUM(order_products.total_price) as total_sum)')
-                    ->groupBy('order_product.order_id');
-
-                if (!empty($filters['min_total'])) {
-                    $subQuery->havingRaw('total_sum >= ' . $filters['min_total']);
-                }
-
-                if (!empty($filters['max_total'])) {
-                    $subQuery->havingRaw('total_sum <= ' . $filters['max_total']);
-                }
-            });
-        }
-
-        return $query->with('products')->paginate(10);
     }
 }
