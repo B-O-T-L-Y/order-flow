@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -23,31 +24,41 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['admin' => \App\Http\Middleware\AdminMiddleware::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->renderable(function (ModelNotFoundException $exception, Request $request) {
+        $exceptions->renderable(function (ModelNotFoundException $e, $request) {
             return response()->json([
-                'errors' => [
-                    'message' => 'The requested resource could not be found.',
-                    'status' => \Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND,
-                ],
-            ]);
+                'error' => [
+                    'message' => 'Resource not found.',
+                    'code' => 'RESOURCE_NOT_FOUND'
+                ]
+            ], \Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND);
         });
 
-        $exceptions->renderable(function (NotFoundHttpException $exception, Request $request) {
+        $exceptions->renderable(function (NotFoundHttpException $e, $request) {
             return response()->json([
-                'errors' => [
+                'error' => [
                     'message' => 'Route not found.',
-                    'status' => \Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND,
-                ],
-            ]);
+                    'code' => 'ROUTE_NOT_FOUND'
+                ]
+            ], \Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND);
         });
 
-        $exceptions->renderable(function (AuthorizationException $exception, Request $request) {
+        $exceptions->renderable(function (AuthorizationException $e, $request) {
             return response()->json([
-                'errors' => [
+                'error' => [
                     'message' => 'You are not authorized to perform this action.',
-                    'status' => \Symfony\Component\HttpFoundation\Response::HTTP_FORBIDDEN,
-                ],
-            ]);
+                    'code' => 'UNAUTHORIZED_ACTION'
+                ]
+            ], \Symfony\Component\HttpFoundation\Response::HTTP_UNAUTHORIZED);
+        });
+
+        $exceptions->renderable(function (ValidationException $e, $request) {
+            return response()->json([
+                'error' => [
+                    'message' => 'Validation error',
+                    'code' => 'VALIDATION_ERROR',
+                    'details' => $e->errors()
+                ]
+            ], \Symfony\Component\HttpFoundation\Response::HTTP_UNPROCESSABLE_ENTITY);
         });
         //
     })->create();
