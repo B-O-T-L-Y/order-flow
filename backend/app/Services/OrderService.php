@@ -52,8 +52,29 @@ readonly class OrderService
     {
         $query = Order::where('user_id', $userId);
 
+        // Filtering by status
         if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
+        }
+
+        // Filtering by date
+        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+            $query->whereBetween('created_at', [$filters['start_date'], $filters['end_date']]);
+        }
+
+        if (!empty($filters['min_total']) && !empty($filters['max_total'])) {
+            $query->whereHas('products', function ($subQuery) use ($filters) {
+                $subQuery->selectRaw('SUM(order_products.total_price) as total_sum)')
+                    ->groupBy('order_product.order_id');
+
+                if (!empty($filters['min_total'])) {
+                    $subQuery->havingRaw('total_sum >= ' . $filters['min_total']);
+                }
+
+                if (!empty($filters['max_total'])) {
+                    $subQuery->havingRaw('total_sum <= ' . $filters['max_total']);
+                }
+            });
         }
 
         return $query->with('products')->paginate(10);
