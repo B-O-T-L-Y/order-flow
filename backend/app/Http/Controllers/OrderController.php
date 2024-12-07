@@ -23,7 +23,8 @@ class OrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $orders = $this->orderService->getUserOrders($request->user()->id);
+        $filters = $request->only('status');
+        $orders = $this->orderService->getUserOrdersWithFilters($filters, $request->user()->id);
 
         return response()->json(['data' => $orders]);
     }

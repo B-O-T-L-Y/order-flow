@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 readonly class OrderService
@@ -42,8 +43,19 @@ readonly class OrderService
         return $order;
     }
 
-    public function getUserOrders(int $userId): iterable
+//    public function getUserOrders(int $userId): iterable
+//    {
+//        return Order::where('user_id', $userId)->with('products')->get();
+//    }
+
+    public function getUserOrdersWithFilters(array $filters, int $userId): LengthAwarePaginator
     {
-        return Order::where('user_id', $userId)->with('products')->get();
+        $query = Order::where('user_id', $userId);
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        return $query->with('products')->paginate(10);
     }
 }
