@@ -12,11 +12,11 @@ readonly class OrderService
     /**
      * @throws \Throwable
      */
-    public function createOrder(array $data): Order
+    public function createOrder(array $data, int $userId): Order
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $userId) {
             $order = Order::create([
-                'user_id' => $data['user_id'],
+                'user_id' => $userId,
                 'status' => 'new',
             ]);
 

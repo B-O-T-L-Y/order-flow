@@ -35,7 +35,8 @@ class OrderController extends Controller
      */
     public function store(OrderRequest $request): JsonResponse
     {
-        $order = $this->orderService->createOrder($request->validated());
+        $userId = $request->user()->id;
+        $order = $this->orderService->createOrder($request->validated(), $userId);
 
         return response()->json(['data' => $order], 201);
     }
