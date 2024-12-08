@@ -28,7 +28,11 @@ class OrderController extends Controller
         $filters = $request->only(['status', 'start_date', 'end_date', 'min_total', 'max_total']);
         $orders = $this->orderService->getUserOrdersWithFilters($filters, $request->user()->id);
 
-        return response()->json(['data' => $orders]);
+        return response()->json([
+            'data' => $orders,
+            'message' => 'Orders retrieved successfully.',
+            'code' => 'ORDERS_FETCHED_SUCCESS'
+        ]);
     }
 
     /**
@@ -40,7 +44,11 @@ class OrderController extends Controller
         $userId = $request->user()->id;
         $order = $this->orderService->createOrder($request->validated(), $userId);
 
-        return response()->json(['data' => $order], Response::HTTP_CREATED);
+        return response()->json([
+            'data' => $order,
+            'message' => 'Order created successfully.',
+            'code' => 'ORDER_CREATED_SUCCESS'
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -51,7 +59,11 @@ class OrderController extends Controller
     {
         $this->authorize('view', $order);
 
-        return response()->json(['data' => $order->load('products')]);
+        return response()->json([
+            'data' => $order->load('products'),
+            'message' => 'Order retrieved successfully.',
+            'code' => 'ORDER_FETCHED_SUCCESS'
+        ]);
     }
 
     /**
@@ -63,7 +75,11 @@ class OrderController extends Controller
         $this->authorize('update', $order);
         $updateOrder = $this->orderService->updateOrderStatus($order, $request->input('status'));
 
-        return response()->json(['data' => $updateOrder]);
+        return response()->json([
+            'data' => $updateOrder,
+            'message' => 'Order updated successfully.',
+            'code' => 'ORDER_UPDATED_SUCCESS'
+        ]);
     }
 
     /**
@@ -76,10 +92,9 @@ class OrderController extends Controller
         $order->delete();
 
         return response()->json([
-            'success' => [
-                'message' => 'Order deleted successfully.',
-                'code' => 'ORDER_DELETED_SUCCESS',
-            ]
+            'data' => null,
+            'message' => 'Order deleted successfully.',
+            'code' => 'ORDER_DELETED_SUCCESS'
         ]);
     }
 }
