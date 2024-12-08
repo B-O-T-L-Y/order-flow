@@ -15,10 +15,23 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || !$request->user()->is_admin) {
-            return response()->json(['message' => 'Unauthorized.'], Response::HTTP_UNAUTHORIZED);
+        if (!$request->user()) {
+            return response()->json([
+                'error' => [
+                    'message' => 'You must be authenticated to access this resource.',
+                    'code' => 'AUTHENTICATION_REQUIRED'
+                ]
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
+        if (!$request->user()->is_admin) {
+            return response()->json([
+                'error' => [
+                    'message' => 'You are not authorized to perform this action.',
+                    'code' => 'UNAUTHORIZED_ACTION'
+                ]
+            ], Response::HTTP_FORBIDDEN);
+        }
         return $next($request);
     }
 }
