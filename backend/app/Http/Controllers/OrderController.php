@@ -75,6 +75,11 @@ class OrderController extends Controller
         $this->authorize('delete', $order);
         $order->delete();
 
-        return response()->json(['message' => 'Order deleted successfully.']);
+        return response()->json([
+            'success' => [
+                'message' => 'Order deleted successfully.',
+                'code' => 'ORDER_DELETED_SUCCESS',
+            ]
+        ]);
     }
 }
