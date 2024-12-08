@@ -8,6 +8,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -79,6 +80,15 @@ return Application::configure(basePath: dirname(__DIR__))
                     'code' => 'AUTHENTICATION_REQUIRED'
                 ]
             ], \Symfony\Component\HttpFoundation\Response::HTTP_UNAUTHORIZED);
+        });
+
+        $exceptions->renderable(function (MethodNotAllowedHttpException $e, $request) {
+            return response()->json([
+                'error' => [
+                    'message' => 'Method not allowed for this route.',
+                    'code' => 'METHOD_NOT_ALLOWED'
+                ]
+            ], \Symfony\Component\HttpFoundation\Response::HTTP_METHOD_NOT_ALLOWED);
         });
         //
     })->create();
