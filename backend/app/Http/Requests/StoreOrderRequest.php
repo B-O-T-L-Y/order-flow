@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OrderRequest extends FormRequest
+class StoreOrderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,15 +22,18 @@ class OrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|string|in:new,processing,completed,delivered',
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|integer|exists:products,id',
+            'products.*.amount' => 'required|integer|min:1',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'status.required' => 'Status is required.',
-            'status.in' => 'Invalid status provided.',
+            'products.required' => 'At least one product must be specified.',
+            'products.*.product_id.required' => 'The product ID is required.',
+            'products.*.amount.min' => 'The product quantity must be at least 1.',
         ];
     }
 }

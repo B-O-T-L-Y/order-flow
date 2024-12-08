@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -34,7 +35,7 @@ class OrderController extends Controller
      * Store a newly created resource in storage.
      * @throws \Throwable
      */
-    public function store(OrderRequest $request): JsonResponse
+    public function store(StoreOrderRequest $request): JsonResponse
     {
         $userId = $request->user()->id;
         $order = $this->orderService->createOrder($request->validated(), $userId);

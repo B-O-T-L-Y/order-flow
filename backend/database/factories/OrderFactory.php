@@ -21,11 +21,11 @@ class OrderFactory extends Factory
     {
         return [
             'user_id' => User::query()->inRandomOrder()->first()->id ?? User::factory(),
-            'status' => fake()->randomElement(['new', 'in_progress', 'shipped', 'delivered']),
+            'status' => fake()->randomElement(['new', 'processing', 'shipped', 'delivered']),
         ];
     }
 
-    public function configure()
+    public function configure(): OrderFactory|Factory
     {
         return $this->afterCreating(function (Order $order) {
             $products = Product::factory()->count(rand(1, 5))->create();
