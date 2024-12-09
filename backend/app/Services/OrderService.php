@@ -67,6 +67,8 @@ readonly class OrderService
                 ]);
             }
 
+            $this->clearUserOrderCache([], $userId);
+
             return $order;
         });
     }
@@ -75,10 +77,19 @@ readonly class OrderService
     {
         $order->update(['status' => $status]);
 
+        $this->clearUserOrderCache([], $order->user_id);
+
         return $order;
     }
 
-    public function clearUserOrderCache(array $filters, int $userId): void
+    public function deleteOrder(Order $order): void
+    {
+        $order->delete();
+
+        $this->clearUserOrderCache([], $order->user_id);
+    }
+
+    private function clearUserOrderCache(array $filters, int $userId): void
     {
         $cacheKey = $this->generateCacheKey($filters, $userId);
         Cache::forget($cacheKey);

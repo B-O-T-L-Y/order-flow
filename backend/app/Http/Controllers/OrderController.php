@@ -44,8 +44,6 @@ class OrderController extends Controller
         $userId = $request->user()->id;
         $order = $this->orderService->createOrder($request->validated(), $userId);
 
-        $this->orderService->clearUserOrderCache([], $userId);
-
         return response()->json([
             'data' => $order,
             'message' => 'Order created successfully.',
@@ -77,8 +75,6 @@ class OrderController extends Controller
         $this->authorize('update', $order);
         $updateOrder = $this->orderService->updateOrderStatus($order, $request->input('status'));
 
-        $this->orderService->clearUserOrderCache([], $order->user_id);
-
         return response()->json([
             'data' => $updateOrder,
             'message' => 'Order updated successfully.',
@@ -93,9 +89,7 @@ class OrderController extends Controller
     public function destroy(Order $order): JsonResponse
     {
         $this->authorize('delete', $order);
-        $order->delete();
-
-        $this->orderService->clearUserOrderCache([], $order->user_id);
+        $this->orderService->deleteOrder($order);
 
         return response()->json([
             'data' => null,
