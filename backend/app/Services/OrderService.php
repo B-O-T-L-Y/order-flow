@@ -5,35 +5,43 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 readonly class OrderService
 {
+    private const CACHE_TTl = 3600;
+
     public function getUserOrdersWithFilters(array $filters, int $userId): LengthAwarePaginator
     {
-        $query = Order::where('user_id', $userId)
-            ->with('products')
-            ->withSum('products as total_sum', 'order_product.total_price');
+        $cacheKey = $this->generateCacheKey($filters, $userId);
 
-        // Filtering by status
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
+        return Cache::remember($cacheKey, self::CACHE_TTl, function () use ($filters, $userId) {
+            $query = Order::where('user_id', $userId)
+                ->with('products')
+                ->withSum('products as total_sum', 'order_product.total_price');
 
-        // Filtering by date
-        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
-            $query->whereBetween('created_at', [$filters['start_date'], $filters['end_date']]);
-        }
+            // Filtering by status
+            if (!empty($filters['status'])) {
+                $query->where('status', $filters['status']);
+            }
 
-        if (!empty($filters['min_total'])) {
-            $query->where('total_sum', '>=', $filters['min_total']);
-        }
+            // Filtering by date
+            if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+                $query->whereBetween('created_at', [$filters['start_date'], $filters['end_date']]);
+            }
 
-        if (!empty($filters['max_total'])) {
-            $query->where('total_sum', '<=', $filters['max_total']);
-        }
 
-        return $query->paginate(10);
+            if (!empty($filters['min_total'])) {
+                $query->where('total_sum', '>=', $filters['min_total']);
+            }
+
+            if (!empty($filters['max_total'])) {
+                $query->where('total_sum', '<=', $filters['max_total']);
+            }
+
+            return $query->paginate(10);
+        });
     }
 
     /**
@@ -68,5 +76,22 @@ readonly class OrderService
         $order->update(['status' => $status]);
 
         return $order;
+    }
+
+    public function clearUserOrderCache(array $filters, int $userId): void
+    {
+        $cacheKey = $this->generateCacheKey($filters, $userId);
+        Cache::forget($cacheKey);
+    }
+
+    private function generateCacheKey(array $filters, int $userId): string
+    {
+        $key = "user:{$userId}:orders";
+
+        if (!empty($filters)) {
+            $key .= ':' . md5(json_encode($filters));
+        }
+
+        return $key;
     }
 }
