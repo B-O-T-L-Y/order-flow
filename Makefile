@@ -6,3 +6,6 @@ down:
 
 back:
 	docker compose exec backend sh
+
+front:
+	docker compose exec frontend sh

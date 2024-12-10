@@ -14,9 +14,9 @@ services:
       - ./backend:/var/www/html
     depends_on:
       - backend
-#      - frontend
     networks:
       - backend
+      - frontend
 
   backend:
     container_name: backend
@@ -66,20 +66,21 @@ services:
     networks:
       - backend
 
-#  frontend:
-#    container_name: frontend
-#    restart: unless-stopped
-#    build:
-#      context: .
-#      dockerfile: docker/node/Dockerfile
-#    ports:
-#      - "5137:5137"
-#    volumes:
-#      - ./frontend:/app
-#      - /app/node_modules
-#    command: ["sh", "-c", "yarn install && yarn dev"]
-#    networks:
-#      - backend
+  frontend:
+    container_name: frontend
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+    ports:
+      - "5173:5173"
+    tty: true
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - nginx
+    networks:
+      - frontend
 
 networks:
   backend:
