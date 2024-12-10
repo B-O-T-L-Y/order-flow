@@ -70,6 +70,9 @@ services:
     container_name: frontend
     restart: unless-stopped
     build:
+      args:
+        user: node
+        uid: 1000
       context: .
       dockerfile: docker/node/Dockerfile
     ports:
