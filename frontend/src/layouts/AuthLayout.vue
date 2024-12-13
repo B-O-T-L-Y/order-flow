@@ -4,12 +4,10 @@ import DefaultFooter from "../components/DefaultFooter.vue";
 </script>
 
 <template>
-  <div>
-    <DefaultHeader />
-    <main>
-      <RouterView />
-    </main>
-    <DefaultFooter />
-  </div>
+  <DefaultHeader/>
+  <main class="pt-6 bg-white dark:bg-gray-800 antialiased h-screen">
+    <RouterView/>
+  </main>
+  <DefaultFooter/>
 </template>
 
