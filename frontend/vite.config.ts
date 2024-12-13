@@ -10,6 +10,13 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
   },
+  proxy: {
+    '/api': {
+      target: 'http://localhost',
+      changeOrigin: true,
+      rewrite: (path) => path.replace(/^\/api/, '')
+    }
+  },
   plugins: [
     vue(),
     vueDevTools(),

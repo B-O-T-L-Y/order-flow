@@ -70,4 +70,23 @@ class AuthController extends Controller
             'code' => 'USER_LOGGED_IN_SUCCESS',
         ]);
     }
+
+    public function user(Request $request): JsonResponse
+    {
+        return response()->json([
+            'data' => $request->user(),
+            'message' => 'User retrieved successfully.',
+            'code' => 'USER_FETCHED_SUCCESS',
+        ]);
+    }
+
+    public function logout(): JsonResponse
+    {
+        auth()->guard('web')->logout();
+
+        return response()->json([
+            'message' => 'User logged out successfully.',
+            'code' => 'USER_LOGGED_OUT_SUCCESS',
+        ]);
+    }
 }

@@ -9,3 +9,6 @@ back:
 
 front:
 	docker compose exec frontend sh
+
+logs:
+	docker logs frontend -f

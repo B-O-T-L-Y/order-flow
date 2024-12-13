@@ -5,15 +5,22 @@ use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
 
-Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('/user', 'user');
+        Route::post('/logout', 'logout');
+    });
+});
+
+Route::middleware(['auth:sanctum'])->group(function () {
     // Admins Routes
     Route::middleware('admin')->group(function () {
-        Route::apiResource('orders', OrderController::class);
+        Route::apiResource('/orders', OrderController::class);
     });
 
     // User Routes
-    Route::apiResource('orders', OrderController::class)->except(['destroy']);
+    Route::apiResource('/orders', OrderController::class)->except(['destroy']);
 });

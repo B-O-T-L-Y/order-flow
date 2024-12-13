@@ -27,6 +27,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['admin' => \App\Http\Middleware\AdminMiddleware::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            return response()->json([
+                'error' => [
+                    'message' => 'HTTP error occurred.',
+                    'code' => 'HTTP_ERROR'
+                ]
+            ], $e->getStatusCode());
+        });
+
         $exceptions->renderable(function (ModelNotFoundException $e, $request) {
             return response()->json([
                 'error' => [
