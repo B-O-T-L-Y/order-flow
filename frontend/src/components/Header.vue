@@ -1,5 +1,7 @@
 <script setup lang="ts">
+  import {useAuthStore} from "@/stores/useAuthStore.ts";
 
+  const auth = useAuthStore();
 </script>
 
 <template>
@@ -56,6 +58,9 @@
             </li>
             <li>
               <RouterLink to="/register" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Register</RouterLink>
+            </li>
+            <li v-if="auth.user">
+              <RouterLink to="/orders" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Orders</RouterLink>
             </li>
             <li>
               <RouterLink to="/login" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Login</RouterLink>

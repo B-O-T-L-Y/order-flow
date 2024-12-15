@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import {createRouter, createWebHistory, type RouteLocation} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RegisterView from "../views/RegisterView.vue";
 import OrdersView from "../views/OrdersView.vue";
@@ -8,6 +8,23 @@ import AuthLayout from "@/layouts/AuthLayout.vue";
 import LoginView from "@/views/LoginView.vue";
 import AboutView from "@/views/AboutView.vue";
 import TermsAndConditionsView from "@/views/TermsAndConditionsView.vue";
+import {useAuthStore} from "@/stores/useAuthStore.ts";
+
+function auth(to: RouteLocation, from: RouteLocation) {
+  const auth = useAuthStore();
+
+  if (!auth.user) {
+    return '/login';
+  }
+}
+
+function guest(to: RouteLocation, from: RouteLocation) {
+  const auth = useAuthStore();
+
+  if (auth.user) {
+    return '/orders';
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +32,7 @@ const router = createRouter({
     {
       path: '/',
       component: DefaultLayout,
+      beforeEnter: guest,
       children: [
         {
           path: '',
@@ -27,21 +45,10 @@ const router = createRouter({
           component: AboutView,
         },
         {
-          path: 'orders',
-          name: 'Orders',
-          component: OrdersView,
-        },
-        {
           path: 'terms-and-conditions',
           name: 'Terms And Conditions',
           component: TermsAndConditionsView,
         },
-      ],
-    },
-    {
-      path: '/',
-      component: AuthLayout,
-      children: [
         {
           path: 'register',
           name: 'Register',
@@ -51,6 +58,18 @@ const router = createRouter({
           path: 'login',
           name: 'Login',
           component: LoginView,
+        },
+      ],
+    },
+    {
+      path: '/',
+      component: AuthLayout,
+      beforeEnter: auth,
+      children: [
+        {
+          path: 'orders',
+          name: 'Orders',
+          component: OrdersView,
         },
       ],
     },

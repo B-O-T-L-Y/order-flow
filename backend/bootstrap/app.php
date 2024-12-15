@@ -19,11 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(append: [
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        ]);
-
+        $middleware->statefulApi();
         $middleware->alias(['admin' => \App\Http\Middleware\AdminMiddleware::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

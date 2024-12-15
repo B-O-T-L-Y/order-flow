@@ -1,23 +1,71 @@
 <script setup lang="ts">
+import {reactive} from "vue";
+import {useAuthStore} from "@/stores/useAuthStore.ts";
 
+const form = reactive<LoginPayload>({
+  email: '',
+  password: '',
+});
+const auth = useAuthStore();
+
+const login = async (): Promise<void> => {
+  const {error} = await auth.login(form);
+
+  if (error) {
+
+  }
+};
 </script>
 
 <template>
   <div class="mx-auto w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
-    <form>
-      <div class="mb-5">
-        <label for="username-success" class="block mb-2 text-sm font-medium text-green-700 dark:text-green-500">Your name</label>
-        <input type="text" id="username-success"
-               class="bg-green-50 border border-green-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
-               placeholder="Bonnie Green">
-        <p class="mt-2 text-sm text-green-600 dark:text-green-500"><span class="font-medium">Alright!</span> Username available!</p>
+    <form @submit.prevent="login" class="space-y-6">
+      <h5 class="text-xl font-medium text-gray-900 dark:text-white">Sign in</h5>
+      <div>
+        <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+        <input
+          v-model="form.email"
+          type="email"
+          name="email"
+          id="email"
+          placeholder="email@example.com"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+        />
       </div>
       <div>
-        <label for="username-error" class="block mb-2 text-sm font-medium text-red-700 dark:text-red-500">Your name</label>
-        <input type="text" id="username-error"
-               class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
-               placeholder="Bonnie Green">
-        <p class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span> Username already taken!</p>
+        <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
+        <input
+          v-model="form.password"
+          type="password"
+          name="password"
+          id="password"
+          placeholder="••••••••"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+        />
+      </div>
+      <div class="flex items-start">
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <input
+              id="remember"
+              type="checkbox"
+              value=""
+              class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
+            />
+          </div>
+          <label for="remember" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Remember me</label>
+        </div>
+        <!--        <a href="#" class="ms-auto text-sm text-blue-700 hover:underline dark:text-blue-500">Lost Password?</a>-->
+      </div>
+      <button
+        type="submit"
+        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Login
+      </button>
+      <div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+        Not registered?
+        <RouterLink to="/register" class="text-blue-700 hover:underline dark:text-blue-500">Create account</RouterLink>
       </div>
     </form>
   </div>

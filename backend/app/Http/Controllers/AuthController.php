@@ -25,16 +25,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $token = $user->createToken('api_token')->plainTextToken;
-
         return response()->json([
-            'data' => [
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ],
-                'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
             ],
             'message' => 'User registered successfully.',
             'code' => 'USER_REGISTERED_SUCCESS',
@@ -43,10 +38,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        /** @var User $request */
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!auth()->attempt($request->validated())) {
             return response()->json([
                 'error' => [
                     'message' => 'Invalid credentials provided.',
@@ -55,17 +47,17 @@ class AuthController extends Controller
             ], Response::HTTP_UNAUTHORIZED);
         }
 
+        /** @var User $user */
+        $user = $request->user();
         $token = $user->createToken('api_token')->plainTextToken;
 
         return response()->json([
-            'data' => [
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ],
-                'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
             ],
+            'token' => $token,
             'message' => 'User logged in successfully.',
             'code' => 'USER_LOGGED_IN_SUCCESS',
         ]);
@@ -73,8 +65,17 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResponse
     {
+        if (!$request->user()) {
+            return response()->json([
+                'error' => [
+                    'message' => 'Unauthenticated.',
+                    'code' => 'UNAUTHENTICATED'
+                ]
+            ], 401);
+        }
+
         return response()->json([
-            'data' => $request->user(),
+            'user' => $request->user(),
             'message' => 'User retrieved successfully.',
             'code' => 'USER_FETCHED_SUCCESS',
         ]);

@@ -8,17 +8,17 @@ export const useApiFetch = createFetch({
       const cookies = useCookies();
       const token = cookies.get('XSRF-TOKEN');
 
-      if (token) {
-        options.headers = {
-          ...options?.headers,
-          'X-XSRF-TOKEN': token,
-        };
-      }
+      options.headers = {
+        ...options?.headers,
+        ...(token ? { 'X-XSRF-TOKEN': token } : {}),
+        Accept: 'application/json',
+      };
 
       return {options};
     },
   },
   fetchOptions: {
     mode: 'cors',
+    credentials: 'include',
   }
 });

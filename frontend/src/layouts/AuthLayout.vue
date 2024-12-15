@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import DefaultHeader from "../components/DefaultHeader.vue";
-import DefaultFooter from "../components/DefaultFooter.vue";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 </script>
 
 <template>
-  <DefaultHeader/>
+  <Header/>
   <main class="pt-6 bg-white dark:bg-gray-800 antialiased h-screen">
     <RouterView/>
   </main>
-  <DefaultFooter/>
+  <Footer/>
 </template>
 

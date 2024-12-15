@@ -3,36 +3,53 @@ import {ref, computed} from 'vue'
 import router from "../router";
 import {useApiFetch} from "@/composables/useApiFetch.ts";
 
-export const authStore = defineStore('auth', () => {
+export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null);
   const isLoggedIn = computed(() => !!user.value);
+  let isSessionVerified = false;
+
+  async function csrfCookie() {
+    await useApiFetch('/sanctum/csrf-cookie');
+  }
 
   const fetchUser = async (): Promise<void> => {
-    const {data, error} = await useApiFetch('/api/user');
+    // await csrfCookie();
+
+    const {data, error} = await useApiFetch('/api/user', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+    }).json();
+
+    if (isSessionVerified) return;
 
     user.value = data.value as User
     console.log(data, error)
   };
 
   const register = async (credentials: RegisterPayload): Promise<void> => {
-    const {data, error} = await useApiFetch('/api/register', {
+    const {error, statusCode} = await useApiFetch('/api/register', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(credentials),
-    });
+    }).json();
 
-    // await fetchUser();
+    if (statusCode.value === 201) {
+      await router.push({path: '/login', replace: true});
+    }
 
-    return {data, error}
+    return {error};
   };
 
   const login = async (credentials: LoginPayload): Promise<void> => {
-    await useApiFetch('/sanctum/csrf-cookie');
+    await csrfCookie();
 
     const {data, error} = await useApiFetch('/api/login', {
       method: 'POST',
-      body: credentials,
-    });
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(credentials),
+    }).json();
+
+    user.value = data.value.user as User
 
     await fetchUser();
 
