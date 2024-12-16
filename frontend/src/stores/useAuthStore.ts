@@ -7,11 +7,6 @@ import useLocalstorage from "@/composables/useLocalStorage.ts";
 export const useAuthStore = defineStore('auth', () => {
   const user = useLocalstorage<User>('auth.user');
   let isSessionVerified = false;
-  // const isLoggedIn = computed(() => !!user.value);
-
-  async function csrfCookie() {
-    await useApiFetch('/sanctum/csrf-cookie');
-  }
 
   const fetchUser = async (): Promise<void> => {
     if (isSessionVerified) return;
@@ -39,8 +34,6 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const login = async (credentials: LoginPayload): Promise<any> => {
-    await csrfCookie();
-
     const {error, statusCode} = await useApiFetch('/api/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},

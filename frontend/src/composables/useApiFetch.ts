@@ -6,7 +6,16 @@ export const useApiFetch = createFetch({
   options: {
     async beforeFetch({options}) {
       const cookies = useCookies();
-      const token = cookies.get("XSRF-TOKEN");
+      let token = cookies.get("XSRF-TOKEN");
+
+      if (!token) {
+        await fetch(`${import.meta.env.VITE_BACKEND_URL}/sanctum/csrf-cookie`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        token = cookies.get("XSRF-TOKEN");
+      }
 
       options.headers = {
         ...options?.headers,
