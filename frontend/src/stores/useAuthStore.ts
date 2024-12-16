@@ -6,13 +6,16 @@ import useLocalstorage from "@/composables/useLocalStorage.ts";
 
 export const useAuthStore = defineStore('auth', () => {
   const user = useLocalstorage<User>('auth.user');
-  const isLoggedIn = computed(() => !!user.value);
+  let isSessionVerified = false;
+  // const isLoggedIn = computed(() => !!user.value);
 
   async function csrfCookie() {
     await useApiFetch('/sanctum/csrf-cookie');
   }
 
   const fetchUser = async (): Promise<void> => {
+    if (isSessionVerified) return;
+
     const {data, error} = await useApiFetch('/api/user', {
       method: 'GET',
       headers: {'Content-Type': 'application/json'},
@@ -35,7 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
     return {error};
   };
 
-  const login = async (credentials: LoginPayload): Promise<void> => {
+  const login = async (credentials: LoginPayload): Promise<any> => {
     await csrfCookie();
 
     const {error, statusCode} = await useApiFetch('/api/login', {
@@ -61,9 +64,22 @@ export const useAuthStore = defineStore('auth', () => {
     await router.push({path: '/login', replace: true});
   };
 
+  const verifySession = async (): Promise<void> => {
+    if (user.value && !isSessionVerified) {
+      isSessionVerified = true;
+
+      try {
+        await fetchUser();
+      } catch (err) {
+        user.value = null;
+      }
+    }
+  }
+
   return {
+    verifySession,
     user,
-    isLoggedIn,
+    // isLoggedIn,
     login,
     register,
     logout,

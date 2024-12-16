@@ -83,6 +83,8 @@ const router = createRouter({
     //   component: UserGeneric
     // },
   ],
-})
+});
+
+router.beforeEach(async (to: RouteLocation, from: RouteLocation) => await useAuthStore().verifySession());
 
 export default router
