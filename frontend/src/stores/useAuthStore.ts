@@ -1,29 +1,24 @@
 import {defineStore} from "pinia";
-import {ref, computed} from 'vue'
+import {computed} from 'vue'
 import router from "../router";
 import {useApiFetch} from "@/composables/useApiFetch.ts";
+import useLocalstorage from "@/composables/useLocalStorage.ts";
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null);
+  const user = useLocalstorage<User>('auth.user');
   const isLoggedIn = computed(() => !!user.value);
-  let isSessionVerified = false;
 
   async function csrfCookie() {
     await useApiFetch('/sanctum/csrf-cookie');
   }
 
   const fetchUser = async (): Promise<void> => {
-    // await csrfCookie();
-
     const {data, error} = await useApiFetch('/api/user', {
       method: 'GET',
       headers: {'Content-Type': 'application/json'},
     }).json();
 
-    if (isSessionVerified) return;
-
-    user.value = data.value as User
-    console.log(data, error)
+    user.value = data.value.user as User
   };
 
   const register = async (credentials: RegisterPayload): Promise<void> => {
@@ -43,17 +38,19 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (credentials: LoginPayload): Promise<void> => {
     await csrfCookie();
 
-    const {data, error} = await useApiFetch('/api/login', {
+    const {error, statusCode} = await useApiFetch('/api/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(credentials),
     }).json();
 
-    user.value = data.value.user as User
+    if (statusCode.value === 200) {
+      await fetchUser();
 
-    await fetchUser();
+      await router.push({path: '/orders', replace: true});
+    }
 
-    return {data, error};
+    return {error};
   };
 
   const logout = async (): Promise<void> => {
