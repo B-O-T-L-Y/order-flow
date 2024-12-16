@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 
 const form = reactive<LoginPayload>({
@@ -7,12 +7,15 @@ const form = reactive<LoginPayload>({
   password: '',
 });
 const auth = useAuthStore();
+const errors = ref<Record<string, string[]>>({});
 
 const login = async (): Promise<void> => {
+  errors.value = {};
+
   const {error} = await auth.login(form);
 
-  if (error) {
-
+  if (error.value) {
+    errors.value = error.value.body.error.details;
   }
 };
 </script>
@@ -31,6 +34,7 @@ const login = async (): Promise<void> => {
           placeholder="email@example.com"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
         />
+        <p v-if="errors.email" class="mt-2 text-sm text-red-600 dark:text-red-500">{{ errors.email[0] }}</p>
       </div>
       <div>
         <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
@@ -42,6 +46,7 @@ const login = async (): Promise<void> => {
           placeholder="••••••••"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
         />
+        <p v-if="errors.password" class="mt-2 text-sm text-red-600 dark:text-red-500">{{ errors.password[0] }}</p>
       </div>
       <div class="flex items-start">
         <div class="flex items-start">
