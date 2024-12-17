@@ -32,12 +32,11 @@ const router = createRouter({
     {
       path: '/',
       component: DefaultLayout,
-      beforeEnter: guest,
       children: [
         {
           path: '',
           name: 'Home',
-          component: HomeView, // HomeView как главная страница
+          component: HomeView,
         },
         {
           path: 'about',
@@ -49,6 +48,13 @@ const router = createRouter({
           name: 'Terms And Conditions',
           component: TermsAndConditionsView,
         },
+      ],
+    },
+    {
+      path: '/',
+      component: DefaultLayout,
+      beforeEnter: guest,
+      children: [
         {
           path: 'register',
           name: 'Register',
