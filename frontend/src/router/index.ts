@@ -10,7 +10,7 @@ import AboutView from "@/views/AboutView.vue";
 import TermsAndConditionsView from "@/views/TermsAndConditionsView.vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 
-function auth(to: RouteLocation, from: RouteLocation) {
+async function auth(to: RouteLocation, from: RouteLocation) {
   const auth = useAuthStore();
 
   if (!auth.user) {
@@ -18,7 +18,7 @@ function auth(to: RouteLocation, from: RouteLocation) {
   }
 }
 
-function guest(to: RouteLocation, from: RouteLocation) {
+async function guest(to: RouteLocation, from: RouteLocation) {
   const auth = useAuthStore();
 
   if (auth.user) {
@@ -87,4 +87,4 @@ const router = createRouter({
 
 router.beforeEach(async (to: RouteLocation, from: RouteLocation) => await useAuthStore().verifySession());
 
-export default router
+export default router;
