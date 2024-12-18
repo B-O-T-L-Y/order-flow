@@ -1,5 +1,4 @@
 import {defineStore} from "pinia";
-import {computed} from 'vue'
 import router from "../router";
 import {useApiFetch} from "@/composables/useApiFetch.ts";
 import useLocalstorage from "@/composables/useLocalStorage.ts";
@@ -9,12 +8,8 @@ export const useAuthStore = defineStore('auth', () => {
   let isSessionVerified = false;
 
   const fetchUser = async (): Promise<void> => {
-    if (isSessionVerified) return;
-
-    const {data, error} = await useApiFetch('/api/user', {
-      method: 'GET',
-      headers: {'Content-Type': 'application/json'},
-    }).json();
+    isSessionVerified = true;
+    const {data, error} = await useApiFetch('/api/user').json();
 
     user.value = data.value.user as User
   };
@@ -59,8 +54,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   const verifySession = async (): Promise<void> => {
     if (user.value && !isSessionVerified) {
-      isSessionVerified = true;
-
       try {
         await fetchUser();
       } catch (err) {
