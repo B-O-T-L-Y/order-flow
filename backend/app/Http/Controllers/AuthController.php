@@ -71,7 +71,7 @@ class AuthController extends Controller
                     'message' => 'Unauthenticated.',
                     'code' => 'UNAUTHENTICATED'
                 ]
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         return response()->json([

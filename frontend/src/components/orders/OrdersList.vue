@@ -14,7 +14,7 @@ const fetchOrders = async () => {
   const {data, error} = await orders.fetchOrders(filters.value);
 
   if (error) {
-    errors.value = error.body.error.details;
+    // errors.value = error.body.error.details;
 
     return;
   }

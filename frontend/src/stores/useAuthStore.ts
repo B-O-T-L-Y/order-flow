@@ -4,8 +4,8 @@ import {useApiFetch} from "@/composables/useApiFetch.ts";
 import useLocalstorage from "@/composables/useLocalStorage.ts";
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = useLocalstorage<User>('auth.user');
   let isSessionVerified = false;
+  const user = useLocalstorage<User>('auth.user');
 
   const fetchUser = async (): Promise<void> => {
     isSessionVerified = true;
@@ -53,7 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const verifySession = async (): Promise<void> => {
-    if (user.value && !isSessionVerified) {
+    if (!isSessionVerified) {
       try {
         await fetchUser();
       } catch (err) {
@@ -65,7 +65,6 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     verifySession,
     user,
-    // isLoggedIn,
     login,
     register,
     logout,

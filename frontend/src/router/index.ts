@@ -21,6 +21,8 @@ async function auth(to: RouteLocation, from: RouteLocation) {
 async function guest(to: RouteLocation, from: RouteLocation) {
   const auth = useAuthStore();
 
+  await auth.verifySession();
+
   if (auth.user) {
     return '/orders';
   }
@@ -90,7 +92,5 @@ const router = createRouter({
     // },
   ],
 });
-
-router.beforeEach(async (to: RouteLocation, from: RouteLocation) => await useAuthStore().verifySession());
 
 export default router;
