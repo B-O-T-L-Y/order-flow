@@ -2,26 +2,41 @@
 import {onMounted, ref} from "vue";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
 
-const orders = useOrdersStore();
+const ordersStore = useOrdersStore();
+const orders = ref([]);
+const pagination = ref({});
+const currentPage = ref(1);
 const filters = ref({
   status: '',
   start_date: '',
   end_date: '',
 });
 
-const fetchOrders = async () => {
-  const errors = ref<Record<string, string[]>>({});
-  const {data, error} = await orders.fetchOrders(filters.value);
+const fetchOrders = async (page = 1) => {
+  // const errors = ref<Record<string, string[]>>({});
+  const {data, error} = await ordersStore.fetchOrders(page, filters.value);
 
-  if (error) {
-    // errors.value = error.body.error.details;
-
-    return;
+  if (data) {
+    orders.value = data.data;
+    pagination.value = {
+      currentPage: data.current_page,
+      lastPage: data.last_page,
+      nextPageUrl: data.next_page_url,
+      prevPageUrl: data.prev_page_url,
+    };
+    currentPage.value = data.current_page;
   }
+};
 
-  console.log(data.value.body.orders)
+const fetchFilteredOrders = () => {
+  currentPage.value = 1;
+  fetchOrders();
+};
 
-  orders.value = data.value.orders; // TODO update backend. Change data to orders
+const changePage = (page: number) => {
+  if (page > 0 && page <= pagination.value.lastPage) {
+    fetchOrders(page);
+  }
 };
 
 onMounted(fetchOrders);
@@ -39,14 +54,24 @@ onMounted(fetchOrders);
         </div>
       </th>
       <th scope="col" class="px-6 py-3">#</th>
-      <th scope="col" class="px-6 py-3">Customer</th>
       <th scope="col" class="px-6 py-3">Status</th>
+      <th scope="col" class="px-6 py-3">Customer</th>
+      <th scope="col" class="px-6 py-3">Email</th>
       <th scope="col" class="px-6 py-3">Products</th>
-      <th scope="col" class="px-6 py-3">Update At</th>
+      <th scope="col" class="px-6 py-3">Amount</th>
+      <th scope="col" class="px-6 py-3">Created At</th>
+      <th scope="col" class="px-6 py-3">Updated At</th>
+      <th scope="col" class="px-6 py-3">Action</th>
     </tr>
+
     </thead>
     <tbody>
-    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+    <tr
+      v-for="(order, index) in orders"
+      :key="order.id"
+      :class="{'border-b': index !== orders.length - 1}"
+      class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+    >
       <td class="w-4 p-4">
         <div class="flex items-center">
           <input id="checkbox-table-search-1" type="checkbox"
@@ -54,15 +79,22 @@ onMounted(fetchOrders);
           <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
         </div>
       </td>
-      <td class="px-6 py-4">React Developer</td>
+      <td class="px-6 py-4">{{ order.id }}</td>
+      <td class="px-6 py-4">{{ order.status }}</td>
+      <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ order.user.name }}</td>
+      <td class="px-6 py-4">{{ order.user.email }}</td>
       <td class="px-6 py-4">
-        <div class="flex items-center">
-          <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>
-          Online
-        </div>
+        <ul>
+          <li v-for="product in order.products" :key="product.id" class="flex flex-wrap">
+            {{ product.name }} - {{ product.price }}
+          </li>
+        </ul>
       </td>
+      <td class="px-6 py-4">{{ order.total_sum }}</td>
+      <td class="px-6 py-4">{{ new Date(order.created_at).toUTCString()}}</td>
+      <td class="px-6 py-4">{{ new Date(order.updated_at).toUTCString()}}</td>
       <td class="px-6 py-4">
-        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
+        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit Order</a>
       </td>
     </tr>
     </tbody>

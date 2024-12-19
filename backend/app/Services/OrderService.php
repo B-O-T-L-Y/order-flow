@@ -18,7 +18,7 @@ readonly class OrderService
 
         return Cache::remember($cacheKey, self::CACHE_TTl, function () use ($filters, $userId) {
             $query = Order::where('user_id', $userId)
-                ->with('products')
+                ->with(['products', 'user'])
                 ->withSum('products as total_sum', 'order_product.total_price');
 
             // Filtering by status

@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory, type RouteLocation} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RegisterView from "../views/RegisterView.vue";
-import OrdersListView from "../views/OrdersListView.vue";
+import OrdersView from "../views/OrdersView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
@@ -77,7 +77,7 @@ const router = createRouter({
         {
           path: 'orders',
           name: 'Orders',
-          component: OrdersListView,
+          component: OrdersView,
         },
       ],
     },

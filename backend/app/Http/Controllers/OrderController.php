@@ -27,12 +27,10 @@ class OrderController extends Controller
     {
         $filters = $request->only(['status', 'start_date', 'end_date', 'min_total', 'max_total']);
         $orders = $this->orderService->getUserOrdersWithFilters($filters, $request->user()->id);
-
         return response()->json([
-            'data' => $orders,
             'message' => 'Orders retrieved successfully.',
             'code' => 'ORDERS_FETCHED_SUCCESS'
-        ]);
+        ] + $orders->toArray() );
     }
 
     /**
