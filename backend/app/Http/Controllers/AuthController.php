@@ -81,13 +81,29 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
-        auth()->guard('web')->logout();
-
-        return response()->json([
+        $success = [
             'message' => 'User logged out successfully.',
             'code' => 'USER_LOGGED_OUT_SUCCESS',
+        ];
+
+        if ($request->bearerToken()) {
+            auth()->logout();
+
+            return response()->json($success);
+        }
+
+        if ($request->session()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json($success);
+        }
+
+        return response()->json([
+            'message' => 'No user or token found to logout',
+            'code' => 'LOGOUT_FAILURE',
         ]);
     }
 }
