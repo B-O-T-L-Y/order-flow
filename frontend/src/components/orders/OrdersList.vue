@@ -4,37 +4,18 @@ import {useOrdersStore} from "@/stores/useOrdersStore.ts";
 
 const ordersStore = useOrdersStore();
 const orders = ref([]);
-const pagination = ref({});
-const currentPage = ref(1);
-const filters = ref({
-  status: '',
-  start_date: '',
-  end_date: '',
-});
 
 const fetchOrders = async (page = 1) => {
   // const errors = ref<Record<string, string[]>>({});
-  const {data, error} = await ordersStore.fetchOrders(page, filters.value);
+  const {data, error} = await ordersStore.fetchOrders(page);
 
   if (data) {
     orders.value = data.data;
-    pagination.value = {
-      currentPage: data.current_page,
-      lastPage: data.last_page,
-      nextPageUrl: data.next_page_url,
-      prevPageUrl: data.prev_page_url,
-    };
-    currentPage.value = data.current_page;
   }
 };
 
-const fetchFilteredOrders = () => {
-  currentPage.value = 1;
-  fetchOrders();
-};
-
 const changePage = (page: number) => {
-  if (page > 0 && page <= pagination.value.lastPage) {
+  if (page > 0 && page <= ordersStore.pagination.lastPage) {
     fetchOrders(page);
   }
 };
@@ -63,7 +44,6 @@ onMounted(fetchOrders);
       <th scope="col" class="px-6 py-3">Updated At</th>
       <th scope="col" class="px-6 py-3">Action</th>
     </tr>
-
     </thead>
     <tbody>
     <tr
@@ -91,12 +71,48 @@ onMounted(fetchOrders);
         </ul>
       </td>
       <td class="px-6 py-4">{{ order.total_sum }}</td>
-      <td class="px-6 py-4">{{ new Date(order.created_at).toUTCString()}}</td>
-      <td class="px-6 py-4">{{ new Date(order.updated_at).toUTCString()}}</td>
+      <td class="px-6 py-4">{{ new Date(order.created_at).toUTCString() }}</td>
+      <td class="px-6 py-4">{{ new Date(order.updated_at).toUTCString() }}</td>
       <td class="px-6 py-4">
         <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit Order</a>
       </td>
     </tr>
     </tbody>
   </table>
+  <nav aria-label="Page navigation example">
+    <ul class="inline-flex -space-x-px text-sm">
+      <li>
+        <a
+          @click="changePage(ordersStore.pagination.currentPage - 1)"
+          :disabled="ordersStore.pagination.currentPage === 1"
+          aria-label="Previous"
+          class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+        >
+          Previous
+        </a>
+      </li>
+      <li
+        v-for="page in Array.from({length: ordersStore.pagination.lastPage}, (_, i) => i + 1)"
+        :key="page"
+      >
+        <a
+          @click="changePage(page)"
+          aria-label="Page {{ page }}"
+          class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+        >
+          {{ page }}
+        </a>
+      </li>
+      <li>
+        <a
+          @click="changePage(ordersStore.pagination.currentPage + 1)"
+          :disabled="ordersStore.pagination.currentPage === ordersStore.pagination.lastPage"
+          aria-label="Next"
+          class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+        >
+          Next
+        </a>
+      </li>
+    </ul>
+  </nav>
 </template>

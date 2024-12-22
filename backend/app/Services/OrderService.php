@@ -12,9 +12,9 @@ readonly class OrderService
 {
     private const CACHE_TTl = 3600;
 
-    public function getUserOrdersWithFilters(array $filters, int $userId): LengthAwarePaginator
+    public function getUserOrdersWithFilters(array $filters, int $userId, int $page = 1): LengthAwarePaginator
     {
-        $cacheKey = $this->generateCacheKey($filters, $userId);
+        $cacheKey = $this->generateCacheKey($filters, $userId, $page);
 
         return Cache::remember($cacheKey, self::CACHE_TTl, function () use ($filters, $userId) {
             $query = Order::where('user_id', $userId)
@@ -67,7 +67,7 @@ readonly class OrderService
                 ]);
             }
 
-            $this->clearUserOrderCache([], $userId);
+            $this->clearUserOrderCache($userId);
 
             return $order;
         });
@@ -77,7 +77,7 @@ readonly class OrderService
     {
         $order->update(['status' => $status]);
 
-        $this->clearUserOrderCache([], $order->user_id);
+        $this->clearUserOrderCache($order->user_id);
 
         return $order;
     }
@@ -86,23 +86,19 @@ readonly class OrderService
     {
         $order->delete();
 
-        $this->clearUserOrderCache([], $order->user_id);
+        $this->clearUserOrderCache($order->user_id);
     }
 
-    private function clearUserOrderCache(array $filters, int $userId): void
+    private function clearUserOrderCache(int $userId): void
     {
-        $cacheKey = $this->generateCacheKey($filters, $userId);
-        Cache::forget($cacheKey);
+        Cache::increment("user:{$userId}:orders_version");
     }
 
-    private function generateCacheKey(array $filters, int $userId): string
+    private function generateCacheKey(array $filters, int $userId, int $page = 1): string
     {
-        $key = "user:{$userId}:orders";
+        $version = Cache::get("user:{$userId}:orders_version", 1);
+        $filterHash = md5(json_encode($filters));
 
-        if (!empty($filters)) {
-            $key .= ':' . md5(json_encode($filters));
-        }
-
-        return $key;
+        return "user:{$userId}:orders:v{$version}:{$filterHash}:page={$page}";
     }
 }

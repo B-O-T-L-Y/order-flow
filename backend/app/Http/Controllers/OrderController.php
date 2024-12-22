@@ -26,7 +26,8 @@ class OrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $filters = $request->only(['status', 'start_date', 'end_date', 'min_total', 'max_total']);
-        $orders = $this->orderService->getUserOrdersWithFilters($filters, $request->user()->id);
+        $page = request()->input('page', 1);
+        $orders = $this->orderService->getUserOrdersWithFilters($filters, $request->user()->id, $page);
         return response()->json([
             'message' => 'Orders retrieved successfully.',
             'code' => 'ORDERS_FETCHED_SUCCESS'
