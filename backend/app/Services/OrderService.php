@@ -28,9 +28,8 @@ readonly class OrderService
 
             // Filtering by date
             if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
-                $query->whereBetween('created_at', [$filters['start_date'], $filters['end_date']]);
+                $query->whereBetween(DB::raw('DATE(created_at)'), [$filters['start_date'], $filters['end_date']]);
             }
-
 
             if (!empty($filters['min_total'])) {
                 $query->where('total_sum', '>=', $filters['min_total']);

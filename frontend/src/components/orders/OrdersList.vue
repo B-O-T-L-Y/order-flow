@@ -7,11 +7,11 @@ const orders = ref([]);
 
 const fetchOrders = async (page = 1) => {
   // const errors = ref<Record<string, string[]>>({});
-  const {data, error} = await ordersStore.fetchOrders(page);
+  const {error} = await ordersStore.fetchOrders(page);
 
-  if (data) {
-    orders.value = data.data;
-  }
+  // if (data) {
+  //   orders.value = data.data;
+  // }
 };
 
 const changePage = (page: number) => {
@@ -47,7 +47,7 @@ onMounted(fetchOrders);
     </thead>
     <tbody>
     <tr
-      v-for="(order, index) in orders"
+      v-for="(order, index) in ordersStore.orders"
       :key="order.id"
       :class="{'border-b': index !== orders.length - 1}"
       class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
