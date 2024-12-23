@@ -1,60 +1,84 @@
 <script setup lang="ts">
+import {useOrdersStore} from "@/stores/useOrdersStore.ts";
+import {onMounted, onUnmounted, ref} from "vue";
 
+const orderStore = useOrdersStore();
+const statuses = [
+  {label: 'All', value: ''},
+  {label: 'New', value: 'new'},
+  {label: 'Processing', value: 'processing'},
+  {label: 'Shipped', value: 'shipped'},
+  {label: 'Delivered', value: 'delivered'},
+];
+const selectedStatus = ref(statuses[0]);
+const dropDownVisible = ref(false);
+const applyStatusFilter = (status: { label: string, value: string }) => {
+  selectedStatus.value = status;
+  dropDownVisible.value = false;
+  orderStore.setFilters({status: status.value});
+  orderStore.fetchOrders();
+};
+
+const closeDropDown = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+
+  if (!target.closest('.status-dropdown')) {
+    dropDownVisible.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', closeDropDown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropDown);
+});
 </script>
 
 <template>
-  <div>
+  <div class="relative status-dropdown">
     <button
+      @click="dropDownVisible = !dropDownVisible"
       class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-      type="button"
     >
-      <svg class="w-3 h-3 text-gray-500 dark:text-gray-400 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-        <path
-          d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
+      <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+           fill="currentColor" viewBox="0 0 24 24">
+        <path fill-rule="evenodd"
+              d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
+              clip-rule="evenodd"/>
       </svg>
-      Last 30 days
+      {{ selectedStatus.label }}
       <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
       </svg>
     </button>
-    <!-- Dropdown menu -->
-    <div id="dropdownRadio" class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
-         data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
-         style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px);">
+    <div
+      v-show="dropDownVisible"
+      class="absolute top-full translate-y-2 block z-100 w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+    >
       <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownRadioButton">
-        <li>
-          <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-            <input id="filter-radio-example-1" type="radio" value="" name="filter-radio"
-                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label for="filter-radio-example-1" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Last day</label>
-          </div>
-        </li>
-        <li>
-          <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-            <input checked="" id="filter-radio-example-2" type="radio" value="" name="filter-radio"
-                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label for="filter-radio-example-2" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Last 7 days</label>
-          </div>
-        </li>
-        <li>
-          <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-            <input id="filter-radio-example-3" type="radio" value="" name="filter-radio"
-                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label for="filter-radio-example-3" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Last 30 days</label>
-          </div>
-        </li>
-        <li>
-          <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-            <input id="filter-radio-example-4" type="radio" value="" name="filter-radio"
-                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label for="filter-radio-example-4" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Last month</label>
-          </div>
-        </li>
-        <li>
-          <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-            <input id="filter-radio-example-5" type="radio" value="" name="filter-radio"
-                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-            <label for="filter-radio-example-5" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Last year</label>
+        <li
+          v-for="(status, index) in statuses"
+          :key="status.label"
+        >
+          <div
+            @click.prevent="applyStatusFilter(status)"
+            class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
+            :class="{'pointer-events-none bg-gray-100 dark:bg-gray-600': status.label === selectedStatus.label}"
+          >
+            <input
+              type="radio"
+              :id="`filter-radio-${index}`"
+              :checked="status.label === selectedStatus.label"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            >
+            <label
+              :for="`filter-radio-${index}`"
+              class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
+            >
+              {{ status.label }}
+            </label>
           </div>
         </li>
       </ul>

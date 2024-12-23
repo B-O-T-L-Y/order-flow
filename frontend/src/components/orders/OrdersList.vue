@@ -47,10 +47,10 @@ onMounted(fetchOrders);
     </thead>
     <tbody>
     <tr
-      v-for="(order, index) in ordersStore.orders"
-      :key="order.id"
-      :class="{'border-b': index !== orders.length - 1}"
-      class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+        v-for="(order, index) in ordersStore.orders"
+        :key="order.id"
+        :class="{'border-b': index !== orders.length - 1}"
+        class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
     >
       <td class="w-4 p-4">
         <div class="flex items-center">
@@ -79,39 +79,43 @@ onMounted(fetchOrders);
     </tr>
     </tbody>
   </table>
-  <nav aria-label="Page navigation example" class="mt-4">
+  <nav
+      v-if="ordersStore.pagination.lastPage > 1"
+      aria-label="Page navigation example"
+      class="mt-4"
+  >
     <ul class="inline-flex -space-x-px text-sm">
       <li>
         <button
-          @click="changePage(ordersStore.pagination.currentPage - 1)"
-          :disabled="ordersStore.pagination.currentPage === 1"
-          aria-label="Previous"
-          class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            @click="changePage(ordersStore.pagination.currentPage - 1)"
+            :disabled="ordersStore.pagination.currentPage === 1"
+            aria-label="Previous"
+            class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
         >
           Previous
         </button>
       </li>
       <li
-        v-for="page in Array.from({length: ordersStore.pagination.lastPage}, (_, i) => i + 1)"
-        :key="page"
+          v-for="page in Array.from({length: ordersStore.pagination.lastPage}, (_, i) => i + 1)"
+          :key="page"
       >
         <button
-          @click="changePage(page)"
-          :aria-current="ordersStore.pagination.currentPage === page ? 'page' : null"
-          :aria-label="`Page ${page}`"
-          :disabled="ordersStore.pagination.currentPage === page"
-          class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          :class="{'bg-gray-100 text-gray-700 dark:bg-gray-500 dark:text-white': ordersStore.pagination.currentPage === page}"
+            @click="changePage(page)"
+            :aria-current="ordersStore.pagination.currentPage === page ? 'page' : null"
+            :aria-label="`Page ${page}`"
+            :disabled="ordersStore.pagination.currentPage === page"
+            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            :class="{'bg-gray-100 text-gray-700 dark:bg-gray-500 dark:text-white': ordersStore.pagination.currentPage === page}"
         >
           {{ page }}
         </button>
       </li>
       <li>
         <button
-          @click="changePage(ordersStore.pagination.currentPage + 1)"
-          :disabled="ordersStore.pagination.currentPage === ordersStore.pagination.lastPage"
-          aria-label="Next"
-          class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+            @click="changePage(ordersStore.pagination.currentPage + 1)"
+            :disabled="ordersStore.pagination.currentPage === ordersStore.pagination.lastPage"
+            aria-label="Next"
+            class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
         >
           Next
         </button>

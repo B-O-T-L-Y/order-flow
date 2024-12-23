@@ -13,8 +13,8 @@ import OrdersFilterByStatus from "@/components/orders/OrdersFilterByStatus.vue";
       <div class="flex items-center flex-column flex-wrap justify-between space-x-4 md:flex-row space-y-4 md:space-y-0 pb-4">
         <div class="flex items-center space-x-4">
           <OrdersAction/>
-          <OrdersFilterByDate/>
           <OrdersFilterByStatus/>
+          <OrdersFilterByDate/>
         </div>
         <OrdersSearch/>
       </div>
