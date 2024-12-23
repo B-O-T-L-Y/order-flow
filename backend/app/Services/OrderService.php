@@ -55,17 +55,24 @@ readonly class OrderService
                 'status' => 'new',
             ]);
 
+            $amount = 0;
+
             foreach ($data['products'] as $productData) {
                 /** @var Product $product */
                 $product = Product::findOrFail($productData['product_id']);
-                $amount = $productData['amount'];
+                $quantity = $productData['quantity'];
+                $lineTotal = $product->price * $quantity;
+                $amount += $lineTotal;
+
                 $order->products()->attach($product->id, [
                     'product_name' => $product->name,
                     'price' => $product->price,
-                    'amount' => $amount,
-                    'total_price' => $product->price * $amount,
+                    'quantity' => $quantity,
+                    'total_price' => $lineTotal,
                 ]);
             }
+
+            $order->update(compact('amount'));
 
             $this->clearUserOrderCache($userId);
 

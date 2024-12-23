@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->enum('status', ['new', 'processing', 'shipped', 'delivered'])->default('new');
+            $table->decimal('amount', 10);
             $table->timestamps();
         });
     }

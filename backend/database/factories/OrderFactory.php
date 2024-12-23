@@ -22,6 +22,7 @@ class OrderFactory extends Factory
         return [
             'user_id' => User::query()->inRandomOrder()->first()->id ?? User::factory(),
             'status' => fake()->randomElement(['new', 'processing', 'shipped', 'delivered']),
+            'amount' => 0,
         ];
     }
 
@@ -29,17 +30,23 @@ class OrderFactory extends Factory
     {
         return $this->afterCreating(function (Order $order) {
             $products = Product::factory()->count(rand(1, 5))->create();
+            $amount = 0;
 
+            /** @var Product $product */
             foreach ($products as $product) {
-                $amount = rand(1, 5);
+                $quantity = rand(1, 5);
+                $lineTotal = $product->price * $quantity;
+                $amount += $lineTotal;
 
                 $order->products()->attach($product, [
                     'product_name' => $product->name,
                     'price' => $product->price,
-                    'amount' => $amount,
-                    'total_price' => $product->price * $amount,
+                    'quantity' => $quantity,
+                    'total_price' => $lineTotal,
                 ]);
             }
+
+            $order->update(compact('amount'));
         });
     }
 }

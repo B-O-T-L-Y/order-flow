@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $id
  * @property int $user_id
  * @property string $status
+ * @property string $amount
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereStatus($value)
@@ -37,12 +39,20 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'status',
+        'amount',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Order $order) {
+            $order->amount = 0;
+        });
+    }
 
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'order_product')
-            ->withPivot(['product_name', 'price', 'amount', 'total_price'])
+            ->withPivot(['product_name', 'price', 'quantity', 'total_price'])
             ->withTimestamps();
     }
 
