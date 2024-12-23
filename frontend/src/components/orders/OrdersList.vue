@@ -79,7 +79,7 @@ onMounted(fetchOrders);
     </tr>
     </tbody>
   </table>
-  <nav aria-label="Page navigation example">
+  <nav aria-label="Page navigation example" class="mt-4">
     <ul class="inline-flex -space-x-px text-sm">
       <li>
         <button
