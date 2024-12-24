@@ -18,8 +18,7 @@ readonly class OrderService
 
         return Cache::remember($cacheKey, self::CACHE_TTl, function () use ($filters, $userId) {
             $query = Order::where('user_id', $userId)
-                ->with(['products', 'user'])
-                ->withSum('products as total_sum', 'order_product.total_price');
+                ->with(['products', 'user']);
 
             // Filtering by status
             if (!empty($filters['status'])) {
@@ -31,13 +30,13 @@ readonly class OrderService
                 $query->whereBetween(DB::raw('DATE(created_at)'), [$filters['start_date'], $filters['end_date']]);
             }
 
-            if (!empty($filters['min_total'])) {
-                $query->where('total_sum', '>=', $filters['min_total']);
-            }
-
-            if (!empty($filters['max_total'])) {
-                $query->where('total_sum', '<=', $filters['max_total']);
-            }
+//            if (!empty($filters['min_total'])) {
+//                $query->where('amount', '>=', $filters['min_total']);
+//            }
+//
+//            if (!empty($filters['max_total'])) {
+//                $query->where('amount', '<=', $filters['max_total']);
+//            }
 
             return $query->paginate(10);
         });
