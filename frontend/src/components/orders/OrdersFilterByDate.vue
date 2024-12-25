@@ -33,6 +33,7 @@ const closeDropDown = (event: MouseEvent) => {
 };
 
 onMounted(() => {
+  applyDateFilter(selectedRange.value);
   document.addEventListener('click', closeDropDown);
 });
 

@@ -30,13 +30,13 @@ readonly class OrderService
                 $query->whereBetween(DB::raw('DATE(created_at)'), [$filters['start_date'], $filters['end_date']]);
             }
 
-//            if (!empty($filters['min_total'])) {
-//                $query->where('amount', '>=', $filters['min_total']);
-//            }
-//
-//            if (!empty($filters['max_total'])) {
-//                $query->where('amount', '<=', $filters['max_total']);
-//            }
+            if (!empty($filters['min_amount'])) {
+                $query->where('amount', '>=', $filters['min_amount']);
+            }
+
+            if (!empty($filters['max_amount'])) {
+                $query->where('amount', '<=', $filters['max_amount']);
+            }
 
             return $query->paginate(10);
         });

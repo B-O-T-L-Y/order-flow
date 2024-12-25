@@ -17,12 +17,15 @@ export const useOrdersStore = defineStore('orders', () => {
     status: '',
     start_date: '',
     end_date: '',
-    // min_total: null,
-    // max_total: null,
+    min_amount: null,
+    max_amount: null,
   });
 
   const fetchOrders = async (page: number = 1): Promise<void> => {
-    const query = new URLSearchParams({...filters.value, page: String(page)}).toString();
+    const cleanFilters = Object.fromEntries(
+      Object.entries({...filters.value, page: String(page)}).filter(([_, value]) => value)
+    );
+    const query = new URLSearchParams(cleanFilters).toString();
     const endpoint = `/api/orders?${query}`;
 
     const {data, error, statusCode} = await useApiFetch(endpoint).json();
@@ -55,8 +58,8 @@ export const useOrdersStore = defineStore('orders', () => {
       status: '',
       start_date: '',
       end_date: '',
-      min_total: null,
-      max_total: null,
+      min_amount: null,
+      max_amount: null,
     };
   };
 
