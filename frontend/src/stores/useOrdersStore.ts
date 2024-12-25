@@ -1,7 +1,7 @@
 import {useApiFetch} from "@/composables/useApiFetch.ts";
 import {defineStore} from "pinia";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 import router from "@/router";
 
 export const useOrdersStore = defineStore('orders', () => {
@@ -10,10 +10,8 @@ export const useOrdersStore = defineStore('orders', () => {
   const pagination = ref({
     currentPage: 1,
     lastPage: 1,
-    nextPageUrl: '',
-    prevPageUrl: '',
   });
-  const filters = ref({
+  const filters = reactive({
     status: '',
     start_date: '',
     end_date: '',
@@ -22,9 +20,7 @@ export const useOrdersStore = defineStore('orders', () => {
   });
 
   const fetchOrders = async (page: number = 1): Promise<void> => {
-    const cleanFilters = Object.fromEntries(
-      Object.entries({...filters.value, page: String(page)}).filter(([_, value]) => value)
-    );
+    const cleanFilters = Object.fromEntries(Object.entries({...filters, page: String(page)}).filter(([_, value]) => value));
     const query = new URLSearchParams(cleanFilters).toString();
     const endpoint = `/api/orders?${query}`;
 
@@ -35,8 +31,6 @@ export const useOrdersStore = defineStore('orders', () => {
       pagination.value = {
         currentPage: data.value.current_page,
         lastPage: data.value.last_page,
-        nextPageUrl: data.value.next_page_url,
-        prevPageUrl: data.value.prev_page_url,
       };
     }
 
@@ -54,13 +48,11 @@ export const useOrdersStore = defineStore('orders', () => {
   };
 
   const resetFilters = () => {
-    filters.value = {
-      status: '',
-      start_date: '',
-      end_date: '',
-      min_amount: null,
-      max_amount: null,
-    };
+    filters.status = '';
+    filters.start_date = '';
+    filters.end_date = '';
+    filters.min_amount = null;
+    filters.max_amount = null;
   };
 
   return {

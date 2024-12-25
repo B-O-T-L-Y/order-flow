@@ -4,30 +4,19 @@ import {computed, ref} from "vue";
 
 const orderStore = useOrdersStore();
 
-const rawMinAmount = ref<number | null>(null);
-const rawMaxAmount = ref<number | null>(null);
-
 const minAmount = computed({
-  get: () => (rawMinAmount.value !== null && rawMinAmount.value >= 0 ? rawMinAmount.value : null),
+  get: () => orderStore.filters.min_amount,
   set: (value: number | null) => {
-    rawMinAmount.value = value !== null && value >= 0 ? value : null;
+    orderStore.filters.min_amount = value !== null && value >= 0 ? value : null;
   },
 });
 
 const maxAmount = computed({
-  get: () => (rawMaxAmount.value !== null && rawMaxAmount.value >= 0 ? rawMaxAmount.value : null),
+  get: () => orderStore.filters.max_amount,
   set: (value: number | null) => {
-    rawMaxAmount.value = value !== null && value >= 0 ? value : null;
+    orderStore.filters.max_amount = value !== null && value >= 0 ? value : null;
   },
 });
-
-const applyAmountFilter = () => {
-  orderStore.setFilters({
-    min_amount: minAmount.value,
-    max_amount: maxAmount.value
-  });
-  orderStore.fetchOrders();
-};
 
 const resetFilters = () => {
   orderStore.resetFilters();
@@ -77,7 +66,7 @@ const resetFilters = () => {
       </div>
     </div>
     <button
-      @click="applyAmountFilter"
+      @click="orderStore.fetchOrders()"
       class="px-5 py-2.5 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
     >
       Apply
