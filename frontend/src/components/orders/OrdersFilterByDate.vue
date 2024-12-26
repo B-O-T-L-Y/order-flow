@@ -4,20 +4,6 @@ import {computed, onMounted, onUnmounted, ref} from "vue";
 
 const ordersStore = useOrdersStore();
 
-const startDate = computed({
-  get: () => ordersStore.filters.start_date,
-  set: (value: string) => {
-    ordersStore.filters.start_date = value;
-  },
-});
-
-const endDate = computed({
-  get: () => ordersStore.filters.end_date,
-  set: (value: string) => {
-    ordersStore.filters.end_date = value;
-  },
-});
-
 const predefinedDateRanges = [
   {label: 'Last Day', start: new Date(Date.now() - 24 * 60 * 60 * 100), end: new Date()},
   {label: 'Last 7 Days', start: new Date(Date.now() - 7 * 24 * 60 * 60 * 100), end: new Date()},
@@ -26,12 +12,21 @@ const predefinedDateRanges = [
   {label: 'Last Year', start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)), end: new Date()},
 ];
 
-const selectedRange = ref(predefinedDateRanges[2]);
+const selectedRange = computed({
+  get: () => predefinedDateRanges.find(
+    range => range.start.toISOString().split('T')[0] === ordersStore.filters.start_date
+      && range.end.toISOString().split('T')[0] === ordersStore.filters.end_date
+  ) || predefinedDateRanges[2],
+  set: (range) => {
+    ordersStore.filters.start_date = range.start.toISOString().split('T')[0];
+    ordersStore.filters.end_date = range.end.toISOString().split('T')[0];
+  }
+});
+
 const dropDownVisible = ref(false);
+
 const applyDateFilter = (range: { label: string, start: Date, end: Date }) => {
   selectedRange.value = range;
-  startDate.value = range.start.toISOString().split('T')[0];
-  endDate.value = range.end.toISOString().split('T')[0];
   ordersStore.fetchOrders();
 };
 
@@ -44,8 +39,6 @@ const closeDropDown = (event: MouseEvent) => {
 };
 
 onMounted(() => {
-  startDate.value = null;
-  endDate.value = null;
   document.addEventListener('click', closeDropDown);
 });
 
@@ -81,7 +74,7 @@ onUnmounted(() => {
           <div
             @click.prevent="applyDateFilter(range)"
             class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-            :class="{'pointer-events-none bg-gray-100 dark:bg-gray-600': selectedRange.label === range.label}"
+            :class="{'pointer-events-none bg-gray-100 dark:bg-gray-600': range.label === selectedRange.label}"
           >
             <input
               type="radio"

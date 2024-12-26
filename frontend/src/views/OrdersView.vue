@@ -6,6 +6,14 @@ import OrdersSearch from "@/components/orders/OrdersSearch.vue";
 import OrdersFilterByDate from "@/components/orders/OrdersFilterByDate.vue";
 import OrdersFilterByStatus from "@/components/orders/OrdersFilterByStatus.vue";
 import OrdersFilterByAmount from "@/components/orders/OrdersFilterByAmount.vue";
+import {useOrdersStore} from "@/stores/useOrdersStore.ts";
+
+const orderStore = useOrdersStore();
+
+const resetFilters = () => {
+  orderStore.resetFilters();
+  orderStore.fetchOrders();
+};
 </script>
 
 <template>
@@ -17,6 +25,12 @@ import OrdersFilterByAmount from "@/components/orders/OrdersFilterByAmount.vue";
           <OrdersFilterByStatus/>
           <OrdersFilterByDate/>
           <OrdersFilterByAmount/>
+          <button
+            @click="resetFilters"
+            class="px-5 py-2.5 focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          >
+            Reset Filters
+          </button>
         </div>
         <OrdersSearch/>
       </div>

@@ -48,11 +48,13 @@ export const useOrdersStore = defineStore('orders', () => {
   };
 
   const resetFilters = () => {
-    filters.status = '';
-    filters.start_date = '';
-    filters.end_date = '';
-    filters.min_amount = null;
-    filters.max_amount = null;
+    Object.assign(filters, {
+      status: '',
+      start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 100).toISOString().split('T')[0],
+      end_date: new Date().toISOString().split('T')[0],
+      min_amount: null,
+      max_amount: null,
+    });
   };
 
   return {
