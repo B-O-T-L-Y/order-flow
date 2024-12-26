@@ -21,6 +21,14 @@ export const useOrdersStore = defineStore('orders', () => {
     max_amount: null,
   });
 
+  const predefineStatuses = [
+    {label: 'All', value: ''},
+    {label: 'New', value: 'new'},
+    {label: 'Processing', value: 'processing'},
+    {label: 'Shipped', value: 'shipped'},
+    {label: 'Delivered', value: 'delivered'},
+  ];
+
   const predefinedDateRanges = [
     {label: 'Last Day', start: new Date(Date.now() - 24 * 60 * 60 * 100), end: new Date()},
     {label: 'Last 7 Days', start: new Date(Date.now() - 7 * 24 * 60 * 60 * 100), end: new Date()},
@@ -67,6 +75,7 @@ export const useOrdersStore = defineStore('orders', () => {
     orders,
     pagination,
     filters,
+    predefineStatuses,
     predefinedDateRanges,
     fetchOrders,
     setDefaultFilters,

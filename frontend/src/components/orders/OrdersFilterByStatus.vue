@@ -12,14 +12,6 @@ const selectedStatus = computed({
   },
 });
 
-const statuses = [
-  {label: 'All', value: ''},
-  {label: 'New', value: 'new'},
-  {label: 'Processing', value: 'processing'},
-  {label: 'Shipped', value: 'shipped'},
-  {label: 'Delivered', value: 'delivered'},
-];
-
 const dropDownVisible = ref(false);
 
 const closeDropDown = (event: MouseEvent) => {
@@ -51,7 +43,7 @@ onUnmounted(() => {
               d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
               clip-rule="evenodd"/>
       </svg>
-      {{ statuses.find(item => item.value === selectedStatus)?.label }}
+      {{ orderStore.predefineStatuses.find(item => item.value === selectedStatus)?.label }}
       <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
       </svg>
@@ -62,7 +54,7 @@ onUnmounted(() => {
     >
       <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownRadioButton">
         <li
-          v-for="(status, index) in statuses"
+          v-for="(status, index) in orderStore.predefineStatuses"
           :key="status.label"
         >
           <div
