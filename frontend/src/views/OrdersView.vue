@@ -2,7 +2,6 @@
 
 import OrdersList from "@/components/orders/OrdersList.vue";
 import OrdersAction from "@/components/orders/OrderAction.vue";
-import OrdersSearch from "@/components/orders/OrdersSearch.vue";
 import OrdersFilterByDate from "@/components/orders/OrdersFilterByDate.vue";
 import OrdersFilterByStatus from "@/components/orders/OrdersFilterByStatus.vue";
 import OrdersFilterByAmount from "@/components/orders/OrdersFilterByAmount.vue";
@@ -32,7 +31,6 @@ const resetFilters = () => {
             Reset Filters
           </button>
         </div>
-        <OrdersSearch/>
       </div>
       <OrdersList/>
     </div>
