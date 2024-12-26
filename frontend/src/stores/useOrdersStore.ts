@@ -7,10 +7,12 @@ import router from "@/router";
 export const useOrdersStore = defineStore('orders', () => {
   const auth = useAuthStore();
   const orders = ref([]);
+
   const pagination = ref({
     currentPage: 1,
     lastPage: 1,
   });
+
   const filters = reactive({
     status: '',
     start_date: '',
@@ -18,6 +20,24 @@ export const useOrdersStore = defineStore('orders', () => {
     min_amount: null,
     max_amount: null,
   });
+
+  const predefinedDateRanges = [
+    {label: 'Last Day', start: new Date(Date.now() - 24 * 60 * 60 * 100), end: new Date()},
+    {label: 'Last 7 Days', start: new Date(Date.now() - 7 * 24 * 60 * 60 * 100), end: new Date()},
+    {label: 'Last 30 Days', start: new Date(Date.now() - 30 * 24 * 60 * 60 * 100), end: new Date()},
+    {label: 'Last Month', start: new Date(new Date().setMonth(new Date().getMonth() - 1)), end: new Date()},
+    {label: 'Last Year', start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)), end: new Date()},
+  ];
+
+  const setDefaultFilters = () => {
+    Object.assign(filters, {
+      status: '',
+      start_date: predefinedDateRanges[2].start.toISOString().split('T')[0],
+      end_date: predefinedDateRanges[2].end.toISOString().split('T')[0],
+      min_amount: null,
+      max_amount: null,
+    });
+  };
 
   const fetchOrders = async (page: number = 1): Promise<void> => {
     const cleanFilters = Object.fromEntries(Object.entries({...filters, page: String(page)}).filter(([_, value]) => value));
@@ -43,26 +63,12 @@ export const useOrdersStore = defineStore('orders', () => {
     return {data: data.value, error};
   }
 
-  const setFilters = (newFilters: Record<string, any>) => {
-    filters.value = {...filters.value, ...newFilters};
-  };
-
-  const resetFilters = () => {
-    Object.assign(filters, {
-      status: '',
-      start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 100).toISOString().split('T')[0],
-      end_date: new Date().toISOString().split('T')[0],
-      min_amount: null,
-      max_amount: null,
-    });
-  };
-
   return {
     orders,
     pagination,
     filters,
+    predefinedDateRanges,
     fetchOrders,
-    setFilters,
-    resetFilters,
+    setDefaultFilters,
   };
 });

@@ -4,19 +4,11 @@ import {computed, onMounted, onUnmounted, ref} from "vue";
 
 const ordersStore = useOrdersStore();
 
-const predefinedDateRanges = [
-  {label: 'Last Day', start: new Date(Date.now() - 24 * 60 * 60 * 100), end: new Date()},
-  {label: 'Last 7 Days', start: new Date(Date.now() - 7 * 24 * 60 * 60 * 100), end: new Date()},
-  {label: 'Last 30 Days', start: new Date(Date.now() - 30 * 24 * 60 * 60 * 100), end: new Date()},
-  {label: 'Last Month', start: new Date(new Date().setMonth(new Date().getMonth() - 1)), end: new Date()},
-  {label: 'Last Year', start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)), end: new Date()},
-];
-
 const selectedRange = computed({
-  get: () => predefinedDateRanges.find(
+  get: () => ordersStore.predefinedDateRanges.find(
     range => range.start.toISOString().split('T')[0] === ordersStore.filters.start_date
       && range.end.toISOString().split('T')[0] === ordersStore.filters.end_date
-  ) || predefinedDateRanges[2],
+  ) || ordersStore.predefinedDateRanges[2],
   set: (range) => {
     ordersStore.filters.start_date = range.start.toISOString().split('T')[0];
     ordersStore.filters.end_date = range.end.toISOString().split('T')[0];
@@ -39,6 +31,7 @@ const closeDropDown = (event: MouseEvent) => {
 };
 
 onMounted(() => {
+  ordersStore.setDefaultFilters();
   document.addEventListener('click', closeDropDown);
 });
 
@@ -68,7 +61,7 @@ onUnmounted(() => {
     >
       <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200">
         <li
-          v-for="(range, index) in predefinedDateRanges"
+          v-for="(range, index) in ordersStore.predefinedDateRanges"
           :key="range.label"
         >
           <div

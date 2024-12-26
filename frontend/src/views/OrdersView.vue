@@ -11,7 +11,7 @@ import {useOrdersStore} from "@/stores/useOrdersStore.ts";
 const orderStore = useOrdersStore();
 
 const resetFilters = () => {
-  orderStore.resetFilters();
+  orderStore.setDefaultFilters();
   orderStore.fetchOrders();
 };
 </script>

@@ -21,7 +21,7 @@ const changePage = (page: number) => {
 };
 
 onMounted(fetchOrders);
-onUnmounted(() => ordersStore.resetFilters());
+onUnmounted(() => ordersStore.setDefaultFilters());
 </script>
 
 <template>
