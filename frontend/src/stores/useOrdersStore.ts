@@ -30,18 +30,23 @@ export const useOrdersStore = defineStore('orders', () => {
   ];
 
   const predefinedDateRanges = [
-    {label: 'Last Day', start: new Date(Date.now() - 24 * 60 * 60 * 100), end: new Date()},
-    {label: 'Last 7 Days', start: new Date(Date.now() - 7 * 24 * 60 * 60 * 100), end: new Date()},
-    {label: 'Last 30 Days', start: new Date(Date.now() - 30 * 24 * 60 * 60 * 100), end: new Date()},
+    {label: 'Last Day', start: new Date(Date.now() - 24 * 60 * 60 * 1000), end: new Date()},
+    {label: 'Last 7 Days', start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), end: new Date()},
+    {label: 'Last 30 Days', start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), end: new Date()},
     {label: 'Last Month', start: new Date(new Date().setMonth(new Date().getMonth() - 1)), end: new Date()},
     {label: 'Last Year', start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)), end: new Date()},
   ];
 
+  const defaultRange = predefinedDateRanges[2];
+  const selectedRange = ref(defaultRange);
+
   const setDefaultFilters = () => {
+    selectedRange.value = defaultRange;
+
     Object.assign(filters, {
       status: '',
-      start_date: predefinedDateRanges[2].start.toISOString().split('T')[0],
-      end_date: predefinedDateRanges[2].end.toISOString().split('T')[0],
+      start_date: defaultRange.start.toISOString().split('T')[0],
+      end_date: defaultRange.end.toISOString().split('T')[0],
       min_amount: null,
       max_amount: null,
     });
@@ -69,7 +74,17 @@ export const useOrdersStore = defineStore('orders', () => {
     }
 
     return {data: data.value, error};
-  }
+  };
+
+  const deleteOrder = async (orderId: number): Promise<void> => {
+    const {error, statusCode} = await useApiFetch(`/api/orders/${orderId}`, {method: 'DELETE'}).json();
+
+    if (statusCode.value === 200) {
+      orders.value = orders.value.filter(order => order.id !== orderId);
+    } else {
+      console.log('Failed to delete order', error.value);
+    }
+  };
 
   return {
     orders,
@@ -77,7 +92,9 @@ export const useOrdersStore = defineStore('orders', () => {
     filters,
     predefineStatuses,
     predefinedDateRanges,
+    selectedRange,
     fetchOrders,
     setDefaultFilters,
+    deleteOrder,
   };
 });

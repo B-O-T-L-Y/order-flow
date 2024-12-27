@@ -4,12 +4,10 @@ import {computed, onMounted, onUnmounted, ref} from "vue";
 
 const ordersStore = useOrdersStore();
 
-const selectedRange = computed({
-  get: () => ordersStore.predefinedDateRanges.find(
-    range => range.start.toISOString().split('T')[0] === ordersStore.filters.start_date
-      && range.end.toISOString().split('T')[0] === ordersStore.filters.end_date
-  ) || ordersStore.predefinedDateRanges[2],
+const currentRange = computed({
+  get: () => ordersStore.predefinedDateRanges.find(range => range.label === ordersStore.selectedRange.label),
   set: (range) => {
+    ordersStore.selectedRange = range;
     ordersStore.filters.start_date = range.start.toISOString().split('T')[0];
     ordersStore.filters.end_date = range.end.toISOString().split('T')[0];
   }
@@ -18,7 +16,7 @@ const selectedRange = computed({
 const dropDownVisible = ref(false);
 
 const applyDateFilter = (range: { label: string, start: Date, end: Date }) => {
-  selectedRange.value = range;
+  currentRange.value = range;
   ordersStore.fetchOrders();
 };
 
@@ -50,7 +48,7 @@ onUnmounted(() => {
         <path
           d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"/>
       </svg>
-      {{ selectedRange.label }}
+      {{ currentRange.label }}
       <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
       </svg>
@@ -67,12 +65,12 @@ onUnmounted(() => {
           <div
             @click.prevent="applyDateFilter(range)"
             class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-            :class="{'pointer-events-none bg-gray-100 dark:bg-gray-600': range.label === selectedRange.label}"
+            :class="{'pointer-events-none bg-gray-100 dark:bg-gray-600': range.label === currentRange.label}"
           >
             <input
               type="radio"
               :id="`filter-radio-${index}`"
-              :checked="range.label === selectedRange.label"
+              :checked="range.label === currentRange.label"
               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             >
             <label

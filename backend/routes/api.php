@@ -18,7 +18,8 @@ Route::controller(AuthController::class)->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     // Admins Routes
     Route::middleware('admin')->group(function () {
-        Route::apiResource('/orders', OrderController::class);
+//        Route::apiResource('/orders', OrderController::class);
+        Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
     });
 
     // User Routes
