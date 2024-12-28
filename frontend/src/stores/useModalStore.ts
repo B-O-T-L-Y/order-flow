@@ -1,25 +1,25 @@
 import {defineStore} from "pinia";
-import {ref} from "vue";
+import {shallowRef, ref} from "vue";
 
 export const useModalStore = defineStore('modal', () => {
-  const isVisible = ref(false);
-  const component = ref<any>(null);
+  const visible = ref(false);
+  const component = shallowRef<null | any>(null);
   const componentProps = ref<Record<string, any>>({});
 
-  const openModal = (modalComponent: any, props: Record<string, any> = {}) => {
-    component.value = modalComponent;
-    componentProps.value = props;
-    isVisible.value = true;
+  const openModal = (options: { component: any; props?: Record<string, any> }) => {
+    component.value = options.component;
+    componentProps.value = options.props || {};
+    visible.value = true;
   };
 
   const closeModal = () => {
-    isVisible.value = false;
+    visible.value = false;
     component.value = null;
     componentProps.value = {};
   };
 
   return {
-    isVisible,
+    visible,
     component,
     componentProps,
     openModal,

@@ -1,33 +1,20 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
+import {useModalStore} from "@/stores/useModalStore.ts";
 
-const props = defineProps<{
-  visible: boolean;
-  title?: string;
-  component: any;
-  componentProps?: Record<string, any>;
-}>();
-
-const emits = defineEmits(['close']);
-const isVisible = ref(props.visible);
-
-watch(() => props.visible, (value) => {
-  isVisible.value = value;
-});
-
-const closeModal = () => emits('close');
+const modalStore = useModalStore();
 </script>
 
 <template>
   <div
-    v-if="isVisible"
+    v-if="modalStore.visible"
     tabindex="-1"
-    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
   >
-    <div class="relative p-4 w-full max-w-md max-h-full">
+    <div class="relative top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 p-4 w-full max-w-md max-h-full">
       <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
         <button
-          @click.prevent="closeModal"
+          @click.prevent="modalStore.closeModal()"
           class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
         >
           <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -35,8 +22,7 @@ const closeModal = () => emits('close');
           </svg>
           <span class="sr-only">Close modal</span>
         </button>
-
-
+        <component :is="modalStore.component" v-bind="modalStore.componentProps"/>
       </div>
     </div>
   </div>

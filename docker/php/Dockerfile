@@ -22,8 +22,8 @@ RUN apk --no-cache update && apk add --no-cache \
 RUN docker-php-ext-configure zip
 RUN docker-php-ext-install zip pdo_mysql
 
-RUN pecl install redis
-RUN docker-php-ext-enable redis
+#RUN pecl install redis
+#RUN docker-php-ext-enable redis
 
 # Settings user
 RUN addgroup -g $uid -S $user && \

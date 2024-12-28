@@ -1,10 +1,36 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, ref} from "vue";
+import {markRaw, onMounted, onUnmounted, ref} from "vue";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
 import {useModalStore} from "@/stores/useModalStore.ts";
+import OrdersDeleteConfirm from "@/components/orders/OrdersDeleteConfirm.vue";
+import {useAuthStore} from "@/stores/useAuthStore.ts";
 
+const auth = useAuthStore();
 const ordersStore = useOrdersStore();
 const modalStore = useModalStore();
+
+const openDeleteConfirmation = (orderId: number) => {
+  modalStore.openModal({
+    component: markRaw(OrdersDeleteConfirm),
+    props: {
+      onConfirm: () => {
+        deleteOrder(orderId);
+        modalStore.closeModal();
+      },
+      onCancel: () => modalStore.closeModal(),
+    }
+  });
+};
+
+const deleteOrder = async (orderId: number) => {
+  const {error} = await ordersStore.deleteOrder(orderId);
+
+  if (error) {
+    console.log('Failed to delete order', error.value);
+  }
+
+  modalStore.closeModal();
+};
 
 const orders = ref([]);
 
@@ -33,13 +59,14 @@ onUnmounted(() => ordersStore.setDefaultFilters());
     <tr>
       <th scope="col" class="px-6 py-3">#</th>
       <th scope="col" class="px-6 py-3">Status</th>
-      <th scope="col" class="px-6 py-3">Customer</th>
-      <th scope="col" class="px-6 py-3">Email</th>
+      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Customer</th>
+      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Email</th>
       <th scope="col" class="px-6 py-3">Products</th>
       <th scope="col" class="px-6 py-3">Amount</th>
       <th scope="col" class="px-6 py-3">Created At</th>
       <th scope="col" class="px-6 py-3">Updated At</th>
-      <th scope="col" class="px-6 py-3">Action</th>
+      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Action</th>
+      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Action</th>
     </tr>
     </thead>
     <tbody>
@@ -51,8 +78,8 @@ onUnmounted(() => ordersStore.setDefaultFilters());
     >
       <td class="px-6 py-4">{{ order.id }}</td>
       <td class="px-6 py-4">{{ order.status }}</td>
-      <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ order.user.name }}</td>
-      <td class="px-6 py-4">{{ order.user.email }}</td>
+      <td v-if="auth.user?.is_admin" class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ order.user.name }}</td>
+      <td v-if="auth.user?.is_admin" class="px-6 py-4">{{ order.user.email }}</td>
       <td class="px-6 py-4">
         <ul>
           <li v-for="product in order.products" :key="product.id" class="flex flex-wrap">
@@ -63,8 +90,16 @@ onUnmounted(() => ordersStore.setDefaultFilters());
       <td class="px-6 py-4">{{ order.amount }}</td>
       <td class="px-6 py-4">{{ new Date(order.created_at).toUTCString() }}</td>
       <td class="px-6 py-4">{{ new Date(order.updated_at).toUTCString() }}</td>
-      <td class="px-6 py-4">
+      <td v-if="auth.user?.is_admin" class="px-6 py-4">
         <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit Order</a>
+      </td>
+      <td v-if="auth.user?.is_admin" class="px-6 py-4">
+        <button
+          @click="openDeleteConfirmation(order.id)"
+          class="font-medium text-red-600 dark:text-red-500 hover:underline"
+        >
+          Remove
+        </button>
       </td>
     </tr>
     </tbody>

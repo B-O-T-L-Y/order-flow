@@ -101,7 +101,7 @@ readonly class OrderService
 
     private function generateCacheKey(array $filters, int $userId, int $page = 1): string
     {
-        $version = Cache::get("user:{$userId}:orders_version", 1);
+        $version = Cache::rememberForever("user:{$userId}:orders_version", fn() => 1);
         $filterHash = md5(json_encode($filters));
 
         return "user:{$userId}:orders:v{$version}:{$filterHash}:page={$page}";

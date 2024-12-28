@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import Modal from "@/components/Modal.vue";
+import {useModalStore} from "@/stores/useModalStore.ts";
+
+const modalStore = useModalStore();
 </script>
 
 <template>
@@ -20,4 +24,9 @@
       </li>
     </ul>
   </footer>
+  <Modal
+    :visible="modalStore.visible"
+    :component="modalStore.component"
+    :componentProps="modalStore.componentProps"
+  />
 </template>
