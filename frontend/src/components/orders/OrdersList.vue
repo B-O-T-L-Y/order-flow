@@ -9,6 +9,12 @@ const auth = useAuthStore();
 const ordersStore = useOrdersStore();
 const modalStore = useModalStore();
 
+const expendedOrderId = ref<number | null>(null);
+
+const toggleExpendedOrder = (orderId: number) => {
+  expendedOrderId.value = expendedOrderId.value === orderId ? null : orderId;
+};
+
 const openDeleteConfirmation = (orderId: number) => {
   modalStore.openModal({
     component: markRaw(OrdersDeleteConfirm),
@@ -65,8 +71,7 @@ onUnmounted(() => ordersStore.setDefaultFilters());
       <th scope="col" class="px-6 py-3">Amount</th>
       <th scope="col" class="px-6 py-3">Created At</th>
       <th scope="col" class="px-6 py-3">Updated At</th>
-      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Action</th>
-      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Action</th>
+      <th v-if="auth.user?.is_admin" scope="col" colspan="2" class="text-center px-6 py-3">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -77,15 +82,41 @@ onUnmounted(() => ordersStore.setDefaultFilters());
       class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
     >
       <td class="px-6 py-4">{{ order.id }}</td>
-      <td class="px-6 py-4">{{ order.status }}</td>
+      <td class="px-6 py-4">
+        <span
+          class="px-3 py-1 rounded-full text-xs font-semibold"
+          :class="{
+            'bg-gray-200 text-gray-700': order.status === 'new',
+            'bg-yellow-200 text-yellow-700': order.status === 'processing',
+            'bg-blue-200 text-blue-700': order.status === 'shipped',
+            'bg-green-200 text-green-700': order.status === 'delivered',
+          }"
+        >
+        {{ order.status }}
+        </span>
+      </td>
       <td v-if="auth.user?.is_admin" class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ order.user.name }}</td>
       <td v-if="auth.user?.is_admin" class="px-6 py-4">{{ order.user.email }}</td>
       <td class="px-6 py-4">
-        <ul>
-          <li v-for="product in order.products" :key="product.id" class="flex flex-wrap">
-            {{ product.name }} - {{ product.price }}
+        <ul class="space-y-2">
+          <li
+            v-for="product in (expendedOrderId === order.id ? order.products : order.products.slice(0, 2))"
+            :key="product.id"
+            class="flex items-center space-x-2"
+          >
+            <img src="https://flowbite.com/docs/images/products/imac.png" alt="Product" class="w-8 h-8 rounded-full">
+            <span>{{ product.name }}</span>
+            <span>x{{ product.pivot.quantity }}</span>
+            <span class="text-gray-500">{{ product.pivot.price }}</span>
           </li>
         </ul>
+        <button
+          v-if="order.products.length > 2"
+          @click="toggleExpendedOrder(order.id)"
+          class="mt-2 font-bold text-blue-500 hover:underline"
+        >
+          {{ expendedOrderId === order.id ? 'Hide Details' : `Show All products (${order.products.length})` }}
+        </button>
       </td>
       <td class="px-6 py-4">{{ order.amount }}</td>
       <td class="px-6 py-4">{{ new Date(order.created_at).toUTCString() }}</td>
