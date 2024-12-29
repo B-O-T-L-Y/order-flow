@@ -22,7 +22,7 @@ class OrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|string|in:new,processing,completed,delivered',
+            'status' => 'required|string|in:new,processing,shipped,delivered',
         ];
     }
 

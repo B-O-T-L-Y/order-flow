@@ -4,10 +4,30 @@ import {useOrdersStore} from "@/stores/useOrdersStore.ts";
 import {useModalStore} from "@/stores/useModalStore.ts";
 import OrdersDeleteConfirm from "@/components/orders/OrdersDeleteConfirm.vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
+import OrderEditForm from "@/components/forms/OrderEditForm.vue";
 
 const auth = useAuthStore();
 const ordersStore = useOrdersStore();
 const modalStore = useModalStore();
+
+const openEditForm = (order) => {
+  modalStore.openModal({
+    component: markRaw(OrderEditForm),
+    props: {
+      order,
+      onSave: async updateData => {
+        const {error} = await ordersStore.updateOrder(order.id, updateData);
+
+        if (!error.value) {
+          modalStore.closeModal();
+        }
+
+        return {error};
+      },
+      onCancel: () => modalStore.closeModal(),
+    }
+  });
+};
 
 const expendedOrderId = ref<number | null>(null);
 
@@ -31,7 +51,7 @@ const openDeleteConfirmation = (orderId: number) => {
 const deleteOrder = async (orderId: number) => {
   const {error} = await ordersStore.deleteOrder(orderId);
 
-  if (error) {
+  if (error.value) {
     console.log('Failed to delete order', error.value);
   }
 
@@ -92,7 +112,7 @@ onUnmounted(() => ordersStore.setDefaultFilters());
             'bg-green-200 text-green-700': order.status === 'delivered',
           }"
         >
-        {{ order.status }}
+        {{ ordersStore.predefineStatuses.find(item => item.value === order.status)?.label }}
         </span>
       </td>
       <td v-if="auth.user?.is_admin" class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ order.user.name }}</td>
@@ -122,7 +142,12 @@ onUnmounted(() => ordersStore.setDefaultFilters());
       <td class="px-6 py-4">{{ new Date(order.created_at).toUTCString() }}</td>
       <td class="px-6 py-4">{{ new Date(order.updated_at).toUTCString() }}</td>
       <td v-if="auth.user?.is_admin" class="px-6 py-4">
-        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit Order</a>
+        <button
+          @click="openEditForm(order)"
+          class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+        >
+          Edit Order
+        </button>
       </td>
       <td v-if="auth.user?.is_admin" class="px-6 py-4">
         <button

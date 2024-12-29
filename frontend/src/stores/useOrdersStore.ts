@@ -52,6 +52,24 @@ export const useOrdersStore = defineStore('orders', () => {
     });
   };
 
+  const updateOrder = async (orderId: number, data: { status: string }): Promise<void> => {
+    const {error, statusCode} = await useApiFetch(`/api/orders/${orderId}`, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+    }).json();
+
+    if (statusCode.value === 200) {
+      const index = orders.value.findIndex(order => order.id === orderId);
+
+      if (index !== -1) {
+        orders.value[index] = {...orders.value[index], ...data};
+      }
+    }
+
+    return {error};
+  };
+
   const fetchOrders = async (page: number = 1): Promise<void> => {
     const cleanFilters = Object.fromEntries(Object.entries({...filters, page: String(page)}).filter(([_, value]) => value));
     const query = new URLSearchParams(cleanFilters).toString();
@@ -93,6 +111,7 @@ export const useOrdersStore = defineStore('orders', () => {
     predefineStatuses,
     predefinedDateRanges,
     selectedRange,
+    updateOrder,
     fetchOrders,
     setDefaultFilters,
     deleteOrder,

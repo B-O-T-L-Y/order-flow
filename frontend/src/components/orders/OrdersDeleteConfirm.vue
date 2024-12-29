@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  onConfirm: () => void;
-  onCancel: () => void;
+  onConfirm: Function;
+  onCancel: Function;
 }>();
 </script>
 
