@@ -63,8 +63,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    verifySession,
     user,
+    verifySession,
     login,
     register,
     logout,

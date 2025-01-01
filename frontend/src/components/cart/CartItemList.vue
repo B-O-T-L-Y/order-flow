@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import {useCartStore} from "@/stores/useCartStore.ts";
+import router from "@/router";
 
 const cartStore = useCartStore();
+
+const props = defineProps({
+  isCheckout: Boolean,
+  onCancel: Function,
+});
 
 const increaseQuantity = (productId: number) => {
   const item = cartStore.cart.find(item => item.product.id === productId);
@@ -24,67 +30,128 @@ const decreaseQuantity = (productId: number) => {
 const removeItem = (productId: number) => {
   cartStore.removeFromCart(productId);
 };
+
+const goToProducts = async () => {
+  if (props.isCheckout) await props.onCancel();
+
+  await router.push({path: '/', replace: true});
+};
+
+const checkout = async () => {
+  if (props.isCheckout) {
+    await props.onCancel();
+
+    await router.push({path: '/checkout', replace: true});
+
+    return;
+  }
+
+  const {data, error, statusCode} = await cartStore.checkout();
+
+  if (statusCode.value === 401) {
+    await router.push({path: '/login', replace: true});
+    return;
+  }
+
+  if (statusCode.value === 201) {
+    cartStore.clearCart();
+
+    await router.push({path: '/orders', replace: true});
+  } else {
+    console.error('Failed to checkout', error.value);
+  }
+};
 </script>
 
 <template>
-  <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-    <li
-      v-for="item in cartStore.cart"
-      :key="item.product.id"
-      class="pb-3 sm:pb-4"
-    >
-      <div class="flex items-center space-x-4 rtl:space-x-reverse">
-        <div class="flex-shrink-0">
-          <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-1.jpg" alt="Neil image">
-        </div>
-        <div class="flex w-full min-w-0">
-          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">{{ item.product.name }}</p>
-        </div>
-        <div class="px-6 py-4">
-          <div class="flex items-center">
-            <button
-              @click="decreaseQuantity(item.product.id)"
-              type="button"
-              class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            >
-              <span class="sr-only">Quantity button</span>
-              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-              </svg>
-            </button>
-            <div>
-              <input
-                v-model="item.quantity"
-                type="number" id="first_product"
-                min="1"
-                class="bg-gray-50 w-14 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-              />
-            </div>
-            <button
-              @click="increaseQuantity(item.product.id)"
-              type="button"
-              class="inline-flex items-center justify-center h-6 w-6 p-1 ms-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            >
-              <span class="sr-only">Quantity button</span>
-              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
-              </svg>
-            </button>
+  <template v-if="cartStore.cart.length > 0">
+    <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+      <li
+        v-for="item in cartStore.cart"
+        :key="item.product.id"
+        class="pb-3 sm:pb-4"
+      >
+        <div class="flex items-center space-x-4 rtl:space-x-reverse">
+          <div class="flex-shrink-0">
+            <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-1.jpg" alt="Neil image">
           </div>
+          <div class="flex w-full min-w-0">
+            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">{{ item.product.name }}</p>
+          </div>
+          <div class="px-6 py-4">
+            <div class="flex items-center">
+              <button
+                @click="decreaseQuantity(item.product.id)"
+                type="button"
+                class="inline-flex items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+              >
+                <span class="sr-only">Quantity button</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+                </svg>
+              </button>
+              <div>
+                <input
+                  v-model="item.quantity"
+                  type="number" id="first_product"
+                  min="1"
+                  class="bg-gray-50 w-14 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  required
+                />
+              </div>
+              <button
+                @click="increaseQuantity(item.product.id)"
+                type="button"
+                class="inline-flex items-center justify-center h-6 w-6 p-1 ms-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-full focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+              >
+                <span class="sr-only">Quantity button</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">{{ item.product.price }}</div>
+          <button
+            @click="removeItem(item.product.id)"
+            type="button"
+            class="inline-flex flex-shrink-0 items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-white bg-red-700 border border-red-700 rounded-full focus:outline-none hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:border-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          >
+            <span class="sr-only">Quantity button</span>
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
+            </svg>
+          </button>
         </div>
-        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">{{ item.product.price }}</div>
-        <button
-          @click="removeItem(item.product.id)"
-          type="button"
-          class="inline-flex flex-shrink-0 items-center justify-center p-1 me-3 text-sm font-medium h-6 w-6 text-white bg-red-700 border border-red-700 rounded-full focus:outline-none hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:border-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-        >
-          <span class="sr-only">Quantity button</span>
-          <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-          </svg>
-        </button>
-      </div>
-    </li>
-  </ul>
+      </li>
+    </ul>
+    <div class="flex items-center justify-between">
+      <p class="text-3xl font-bold text-gray-900 me-auto dark:text-white">Total: {{ cartStore.totalAmount.toFixed(2) }}</p>
+      <button
+        @click="cartStore.clearCart"
+        type="button"
+        class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-4 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+      >
+        Clear Cart
+      </button>
+      <button
+        @click="checkout"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Create Order
+      </button>
+    </div>
+  </template>
+
+  <template v-else>
+    <div class="flex items-center justify-between">
+      <p class="text-center text-lg font-semibold text-gray-900 dark:text-white">Cart is empty</p>
+      <button
+        @click="goToProducts"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Go to Products
+      </button>
+    </div>
+  </template>
 </template>

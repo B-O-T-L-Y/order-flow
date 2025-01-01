@@ -9,7 +9,9 @@ const modalStore = useModalStore();
 const openModalStore = () => {
   modalStore.openModal({
     component: Cart,
-    props: {}
+    props: {
+      onCancel: () => modalStore.closeModal(),
+    }
   });
 };
 </script>

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/products', [ProductController::class, 'index']);
-Route::post('/checkout', [ProductController::class, 'store']);
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');

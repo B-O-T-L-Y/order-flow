@@ -24,7 +24,7 @@ class StoreOrderRequest extends FormRequest
         return [
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|integer|exists:products,id',
-            'products.*.amount' => 'required|integer|min:1',
+            'products.*.quantity' => 'required|integer|min:1',
         ];
     }
 
@@ -33,7 +33,9 @@ class StoreOrderRequest extends FormRequest
         return [
             'products.required' => 'At least one product must be specified.',
             'products.*.product_id.required' => 'The product ID is required.',
-            'products.*.amount.min' => 'The product quantity must be at least 1.',
+            'products.*.product_id.exists' => 'The selected product does not exist.',
+            'products.*.quantity.required' => 'The product quantity is required.',
+            'products.*.quantity.min' => 'The product quantity must be at least 1.',
         ];
     }
 }

@@ -39,11 +39,6 @@ const router = createRouter({
           name: 'Products',
           component: ProductsView,
         },
-        {
-          path: 'checkout',
-          name: 'Checkout',
-          component: CheckoutView
-        },
       ],
     },
     {
@@ -68,6 +63,11 @@ const router = createRouter({
       component: AuthLayout,
       beforeEnter: auth,
       children: [
+        {
+          path: 'checkout',
+          name: 'Checkout',
+          component: CheckoutView
+        },
         {
           path: 'orders',
           name: 'Orders',
