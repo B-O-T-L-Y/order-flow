@@ -2,8 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/products', [ProductController::class, 'index']);
+Route::post('/checkout', [ProductController::class, 'store']);
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');

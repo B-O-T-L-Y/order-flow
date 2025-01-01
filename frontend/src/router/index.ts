@@ -1,14 +1,13 @@
 import {createRouter, createWebHistory, type RouteLocation} from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import RegisterView from "../views/RegisterView.vue";
 import OrdersView from "../views/OrdersView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import LoginView from "@/views/LoginView.vue";
-import AboutView from "@/views/AboutView.vue";
-import TermsAndConditionsView from "@/views/TermsAndConditionsView.vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
+import ProductsView from "@/views/ProductsView.vue";
+import CheckoutView from "@/views/CheckoutView.vue";
 
 async function auth(to: RouteLocation, from: RouteLocation) {
   const auth = useAuthStore();
@@ -37,18 +36,13 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'Home',
-          component: HomeView,
+          name: 'Products',
+          component: ProductsView,
         },
         {
-          path: 'about',
-          name: 'About',
-          component: AboutView,
-        },
-        {
-          path: 'terms-and-conditions',
-          name: 'Terms And Conditions',
-          component: TermsAndConditionsView,
+          path: 'checkout',
+          name: 'Checkout',
+          component: CheckoutView
         },
       ],
     },

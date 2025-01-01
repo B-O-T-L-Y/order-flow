@@ -35,7 +35,7 @@ const saveChanges = async (): Promise<void> => {
 </script>
 
 <template>
-  <form class="max-w-sm mx-auto p-4 space-y-6">
+  <form class="mx-auto px-8 py-4 space-y-6">
     <h5 class="text-xl font-medium text-gray-900 dark:text-white">Edit Order</h5>
     <div>
       <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select status</label>
