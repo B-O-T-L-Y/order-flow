@@ -2,9 +2,11 @@
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 import {useModalStore} from "@/stores/useModalStore.ts";
 import Cart from "@/components/cart/Cart.vue";
+import {useCartStore} from "@/stores/useCartStore.ts";
 
 const auth = useAuthStore();
 const modalStore = useModalStore();
+const cartStore = useCartStore();
 
 const openModalStore = () => {
   modalStore.openModal({
@@ -20,10 +22,10 @@ const openModalStore = () => {
   <header>
     <nav class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-600">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <a href="https://flowbite.com/" class="flex items-center space-x-3 rtl:space-x-reverse">
+        <RouterLink to="/" class="flex items-center space-x-3 rtl:space-x-reverse">
           <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo"/>
           <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Order Tracking System</span>
-        </a>
+        </RouterLink>
         <div class="flex w-auto order-1 items-center justify-between space-x-8">
           <ul
             class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
@@ -78,9 +80,29 @@ const openModalStore = () => {
                 d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z"/>
             </svg>
             Buy now
+            <transition name="fade">
+              <span
+                v-if="cartStore.totalQuantity"
+                class="inline-flex items-center justify-center min-w-4 h-4 p-2 ms-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full"
+              >
+                {{ cartStore.totalQuantity }}
+              </span>
+            </transition>
           </button>
         </div>
       </div>
     </nav>
   </header>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

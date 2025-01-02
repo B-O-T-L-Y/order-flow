@@ -47,6 +47,8 @@ export const useCartStore = defineStore('cart', () => {
     Number(cart.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0).toFixed(2))
   );
 
+  const totalQuantity = computed(() => cart.value.reduce((sum, item) => sum + item.quantity, 0));
+
   const checkout = async () => {
     const payload = {
       products: cart.value.map(item => ({
@@ -67,6 +69,7 @@ export const useCartStore = defineStore('cart', () => {
   return {
     cart,
     totalAmount,
+    totalQuantity,
     addToCart,
     updateQuantity,
     removeFromCart,
