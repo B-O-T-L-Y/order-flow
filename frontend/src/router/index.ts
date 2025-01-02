@@ -13,7 +13,10 @@ async function auth(to: RouteLocation, from: RouteLocation) {
   const auth = useAuthStore();
 
   if (!auth.user) {
-    return '/login';
+    return {
+      path: '/login',
+      query: {redirect: to.fullPath},
+    };
   }
 }
 

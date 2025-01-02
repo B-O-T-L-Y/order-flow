@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {reactive, ref} from "vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
+import {useRoute} from "vue-router";
+
+const route = useRoute();
 
 const form = reactive<LoginPayload>({
   email: '',
@@ -12,7 +15,9 @@ const errors = ref<Record<string, string[]>>({});
 const login = async (): Promise<void> => {
   errors.value = {};
 
-  const {error} = await auth.login(form);
+  const redirectPath = route.query.redirect as string;
+
+  const {error} = await auth.login(form, redirectPath);
 
   if (error.value) {
     errors.value = error.value.body.error.details;

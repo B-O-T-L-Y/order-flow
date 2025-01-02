@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     return {error};
   };
 
-  const login = async (credentials: LoginPayload): Promise<any> => {
+  const login = async (credentials: LoginPayload, redirectPath?: string): Promise<any> => {
     const {error, statusCode} = await useApiFetch('/api/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (statusCode.value === 200) {
       await fetchUser();
 
-      await router.push({path: '/orders', replace: true});
+      await router.push({path: redirectPath || '/orders', replace: true});
     }
 
     return {error};

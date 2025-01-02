@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useCartStore} from "@/stores/useCartStore.ts";
 import router from "@/router";
-import {ref} from "vue";
+import {onUnmounted, ref} from "vue";
 
 const cartStore = useCartStore();
 
@@ -85,6 +85,8 @@ const checkout = async () => {
     console.error('Failed to checkout', error.value);
   }
 };
+
+onUnmounted(() => clearInterval(countdownInterval!));
 </script>
 
 <template>
@@ -101,7 +103,7 @@ const checkout = async () => {
         <span class="sr-only">Check icon</span>
       </div>
       <div class="ms-3 text-sm font-normal">
-        Order created successfully!<br>Redirecting to Orders in {{ countdown }} seconds...
+        Order created successfully!<br>Redirecting to Orders in <span class="text-gray-700 font-bold dark:text-gray-400">{{ countdown }}</span> seconds...
       </div>
     </div>
   </transition>
@@ -167,7 +169,7 @@ const checkout = async () => {
       </li>
     </ul>
     <div class="flex items-center justify-between">
-      <p class="text-xl font-bold text-gray-900 me-auto dark:text-white">Total: {{ cartStore.totalAmount.toFixed(2) }}</p>
+      <p class="text-2xl font-bold text-gray-900 me-auto dark:text-white">Total: {{ cartStore.totalAmount.toFixed(2) }}</p>
       <button
         @click="cartStore.clearCart"
         type="button"
