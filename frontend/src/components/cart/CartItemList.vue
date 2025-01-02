@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useCartStore} from "@/stores/useCartStore.ts";
 import router from "@/router";
+import {ref} from "vue";
 
 const cartStore = useCartStore();
 
@@ -8,6 +9,22 @@ const props = defineProps({
   isCheckout: Boolean,
   onCancel: Function,
 });
+
+const success = ref<boolean>(false);
+const countdown = ref<number>(10);
+let countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+const startCountdown = () => {
+  countdownInterval = setInterval(() => {
+    if (countdown.value > 0) {
+      countdown.value--;
+    } else {
+      clearInterval(countdownInterval!);
+      success.value = false;
+      router.push({path: '/orders', replace: true});
+    }
+  }, 1000);
+};
 
 const increaseQuantity = (productId: number) => {
   const item = cartStore.cart.find(item => item.product.id === productId);
@@ -37,26 +54,33 @@ const goToProducts = async () => {
   await router.push({path: '/', replace: true});
 };
 
+const goToOrders = async () => {
+  if (props.isCheckout) await props.onCancel();
+
+  await router.push({path: '/orders', replace: true});
+};
+
 const checkout = async () => {
   if (props.isCheckout) {
     await props.onCancel();
-
     await router.push({path: '/checkout', replace: true});
 
     return;
   }
 
-  const {data, error, statusCode} = await cartStore.checkout();
+  const {error, statusCode} = await cartStore.checkout();
 
   if (statusCode.value === 401) {
     await router.push({path: '/login', replace: true});
+
     return;
   }
 
   if (statusCode.value === 201) {
-    cartStore.clearCart();
+    success.value = true;
+    await cartStore.clearCart();
 
-    await router.push({path: '/orders', replace: true});
+    startCountdown();
   } else {
     console.error('Failed to checkout', error.value);
   }
@@ -64,6 +88,23 @@ const checkout = async () => {
 </script>
 
 <template>
+  <transition name="fade">
+    <div
+      v-if="success"
+      class="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert"
+    >
+      <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+        </svg>
+        <span class="sr-only">Check icon</span>
+      </div>
+      <div class="ms-3 text-sm font-normal">
+        Order created successfully!<br>Redirecting to Orders in {{ countdown }} seconds...
+      </div>
+    </div>
+  </transition>
   <template v-if="cartStore.cart.length > 0">
     <ul class="divide-y divide-gray-200 dark:divide-gray-700">
       <li
@@ -144,14 +185,32 @@ const checkout = async () => {
   </template>
 
   <template v-else>
-    <div class="flex items-center justify-between">
-      <p class="text-center text-lg font-semibold text-gray-900 dark:text-white">Cart is empty</p>
+    <div class="flex items-center justify-between space-x-4">
+      <p class="text-center text-lg font-semibold text-gray-900 me-auto dark:text-white">Cart is empty</p>
       <button
         @click="goToProducts"
         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
         Go to Products
       </button>
+      <button
+        @click="goToOrders"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Go to Orders
+      </button>
     </div>
   </template>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

@@ -39,7 +39,7 @@ export const useCartStore = defineStore('cart', () => {
     cart.value = cart.value.filter(item => item.product.id !== productId);
   };
 
-  const clearCart = () => {
+  const clearCart = async () => {
     cart.value = [];
   };
 
