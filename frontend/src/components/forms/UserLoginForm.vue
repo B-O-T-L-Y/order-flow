@@ -36,6 +36,7 @@ const login = async (): Promise<void> => {
         name="email"
         id="email"
         placeholder="email@example.com"
+        autocomplete="username"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
       />
       <p v-if="errors?.email" class="mt-2 text-sm text-red-600 dark:text-red-500">{{ errors.email[0] }}</p>
@@ -48,6 +49,7 @@ const login = async (): Promise<void> => {
         name="password"
         id="password"
         placeholder="••••••••"
+        autocomplete="current-password"
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
       />
       <p v-if="errors?.password" class="mt-2 text-sm text-red-600 dark:text-red-500">{{ errors.password[0] }}</p>
