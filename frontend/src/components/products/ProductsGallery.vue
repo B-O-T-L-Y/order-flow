@@ -10,13 +10,14 @@ const productsStore = useProductsStore();
 const cartStore = useCartStore();
 const cartProductName = ref<string | null>(null);
 const showSuccess = ref<boolean>(false);
+const props = defineProps<{page?: number}>();
 
 const fetchProducts = async (page: number) => {
   await productsStore.fetchProducts(page);
 
-  if (page === 1) {
+  if (page === 1 && route.params.page) {
     await router.push({path: `/`});
-  } else {
+  } else if (page > 1) {
     await router.push({path: `/${page}`});
   }
 };
@@ -33,7 +34,7 @@ const addCart = (product: Product) => {
   }, 3000);
 };
 
-onMounted(() => fetchProducts(parseInt(route.params.page as string) || 1));
+onMounted(() => fetchProducts(props.page || 1));
 watch(
   () => route.params.page,
   () => {

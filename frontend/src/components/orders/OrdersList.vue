@@ -12,6 +12,7 @@ const router = useRouter();
 const auth = useAuthStore();
 const ordersStore = useOrdersStore();
 const modalStore = useModalStore();
+const props = defineProps<{ page?: number }>();
 
 const openEditForm = (order) => {
   modalStore.openModal({
@@ -66,9 +67,9 @@ const orders = ref([]);
 const fetchOrders = async (page: number) => {
   await ordersStore.fetchOrders(page);
 
-  if (page === 1) {
+  if (page === 1 && route.params.page) {
     await router.push({path: '/orders'});
-  } else {
+  } else if (page > 1) {
     await router.push({path: `/orders/${page}`});
   }
 };
@@ -79,16 +80,18 @@ const changePage = (page: number) => {
   }
 };
 
-onMounted(() => fetchOrders(parseInt(route.params.page as string) || 1));
+onMounted(() => {
+  ordersStore.setDefaultFilters();
+  fetchOrders(props.page || 1);
+});
 watch(
   () => route.params.page,
   () => {
     const pageNum = parseInt(route.params.page as string) || 1;
 
     if (pageNum !== ordersStore.pagination.currentPage) fetchOrders(pageNum);
-  })
-;
-onUnmounted(() => ordersStore.setDefaultFilters());
+  }
+);
 </script>
 
 <template>

@@ -86,7 +86,7 @@ const router = createRouter({
         },
         {
           path: 'orders/:page(\\d+)?',
-          name: 'Orders',
+          name: 'OrdersPaginated',
           component: OrdersView,
           props: route => ({page: parseInt(route.params.page as string || 1)}),
         },
