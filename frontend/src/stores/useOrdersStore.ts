@@ -40,7 +40,7 @@ export const useOrdersStore = defineStore('orders', () => {
   const defaultRange = predefinedDateRanges[2];
   const selectedRange = ref(defaultRange);
 
-  const setDefaultFilters = () => {
+  const setDefaultFilters = async () => {
     selectedRange.value = defaultRange;
 
     Object.assign(filters, {
@@ -50,6 +50,8 @@ export const useOrdersStore = defineStore('orders', () => {
       min_amount: null,
       max_amount: null,
     });
+
+    await router.push({path: '/orders'});
   };
 
   const updateOrder = async (orderId: number, data: { status: string }): Promise<void> => {
