@@ -5,12 +5,15 @@ import OrdersFilterByDate from "@/components/orders/OrdersFilterByDate.vue";
 import OrdersFilterByStatus from "@/components/orders/OrdersFilterByStatus.vue";
 import OrdersFilterByAmount from "@/components/orders/OrdersFilterByAmount.vue";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
+import {useRouter} from "vue-router";
 
+const router = useRouter();
 const orderStore = useOrdersStore();
 
 const resetFilters = () => {
   orderStore.setDefaultFilters();
   orderStore.fetchOrders();
+  router.push({path: '/orders'});
 };
 </script>
 
