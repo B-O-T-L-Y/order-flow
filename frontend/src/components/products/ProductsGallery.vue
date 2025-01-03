@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import {useCartStore} from "@/stores/useCartStore.ts";
 import {useProductsStore} from "@/stores/useProductsStore.ts";
+import {useRoute, useRouter} from "vue-router"
 
+const route = useRoute();
+const router = useRouter();
 const productsStore = useProductsStore();
 const cartStore = useCartStore();
 const cartProductName = ref<string | null>(null);
@@ -10,6 +13,12 @@ const showSuccess = ref<boolean>(false);
 
 const fetchProducts = async (page: number) => {
   await productsStore.fetchProducts(page);
+
+  if (page === 1) {
+    await router.push({path: `/`});
+  } else {
+    await router.push({path: `/${page}`});
+  }
 };
 
 const addCart = (product: Product) => {
@@ -24,7 +33,15 @@ const addCart = (product: Product) => {
   }, 3000);
 };
 
-onMounted(() => fetchProducts(1));
+onMounted(() => fetchProducts(parseInt(route.params.page as string) || 1));
+watch(
+  () => route.params.page,
+  () => {
+    const pageNum = parseInt(route.params.page as string) || 1;
+
+    if (pageNum !== productsStore.pagination.currentPage) fetchProducts(pageNum);
+  }
+);
 </script>
 
 <template>

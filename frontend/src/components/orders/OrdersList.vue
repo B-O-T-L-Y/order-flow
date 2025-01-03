@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import {markRaw, onMounted, onUnmounted, ref} from "vue";
+import {markRaw, onMounted, onUnmounted, ref, watch} from "vue";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
 import {useModalStore} from "@/stores/useModalStore.ts";
 import OrdersDeleteConfirm from "@/components/orders/OrdersDeleteConfirm.vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 import OrderEditForm from "@/components/forms/OrderEditForm.vue";
+import {useRoute, useRouter} from "vue-router";
 
+const route = useRoute();
+const router = useRouter();
 const auth = useAuthStore();
 const ordersStore = useOrdersStore();
 const modalStore = useModalStore();
@@ -60,13 +63,14 @@ const deleteOrder = async (orderId: number) => {
 
 const orders = ref([]);
 
-const fetchOrders = async (page = 1) => {
-  // const errors = ref<Record<string, string[]>>({});
-  const {error} = await ordersStore.fetchOrders(page);
+const fetchOrders = async (page: number) => {
+  await ordersStore.fetchOrders(page);
 
-  // if (data) {
-  //   orders.value = data.data;
-  // }
+  if (page === 1) {
+    await router.push({path: '/orders'});
+  } else {
+    await router.push({path: `/orders/${page}`});
+  }
 };
 
 const changePage = (page: number) => {
@@ -75,7 +79,15 @@ const changePage = (page: number) => {
   }
 };
 
-onMounted(fetchOrders);
+onMounted(() => fetchOrders(parseInt(route.params.page as string) || 1));
+watch(
+  () => route.params.page,
+  () => {
+    const pageNum = parseInt(route.params.page as string) || 1;
+
+    if (pageNum !== ordersStore.pagination.currentPage) fetchOrders(pageNum);
+  })
+;
 onUnmounted(() => ordersStore.setDefaultFilters());
 </script>
 

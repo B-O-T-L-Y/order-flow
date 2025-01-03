@@ -11,7 +11,7 @@ export const useProductsStore = defineStore('products', () => {
 
   const fetchProducts = async (page: number = 1): Promise<void> => {
     const endpoint = `/api/products?page=${page}`;
-    const {data, error, statusCode} = await useApiFetch(endpoint).json();
+    const {data, statusCode} = await useApiFetch(endpoint).json();
 
     if (statusCode.value === 200) {
       products.value = data.value.data;
