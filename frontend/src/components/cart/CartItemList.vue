@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import {useCartStore} from "@/stores/useCartStore.ts";
-import router from "@/router";
 import {onUnmounted, ref} from "vue";
+import {useRouter} from "vue-router";
 
+const router = useRouter();
 const cartStore = useCartStore();
 
 const props = defineProps({

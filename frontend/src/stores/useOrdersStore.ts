@@ -2,9 +2,10 @@ import {useApiFetch} from "@/composables/useApiFetch.ts";
 import {defineStore} from "pinia";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 import {reactive, ref} from "vue";
-import router from "@/router";
+import {useRouter} from "vue-router";
 
 export const useOrdersStore = defineStore('orders', () => {
+  const router = useRouter();
   const auth = useAuthStore();
   const orders = ref([]);
 

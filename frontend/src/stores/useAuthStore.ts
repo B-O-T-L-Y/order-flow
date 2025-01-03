@@ -1,11 +1,12 @@
 import {defineStore} from "pinia";
-import router from "../router";
 import {useApiFetch} from "@/composables/useApiFetch.ts";
 import useLocalstorage from "@/composables/useLocalStorage.ts";
+import {useRouter} from "vue-router";
 
 export const useAuthStore = defineStore('auth', () => {
-  let isSessionVerified = false;
+  const router = useRouter();
   const user = useLocalstorage<User>('auth.user');
+  let isSessionVerified = false;
 
   const fetchUser = async (): Promise<void> => {
     isSessionVerified = true;
