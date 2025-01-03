@@ -25,7 +25,7 @@ class OrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->only(['status', 'start_date', 'end_date', 'min_amount', 'max_amount']);
+        $filters = $request->only(['user_id', 'status', 'start_date', 'end_date', 'min_amount', 'max_amount']);
         $page = request()->input('page', 1);
         $user = $request->user();
         $orders = $this->orderService->getUserOrdersWithFilters($filters, $user->id, $user->is_admin, $page);

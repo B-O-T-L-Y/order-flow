@@ -5,7 +5,10 @@ import OrdersFilterByDate from "@/components/orders/OrdersFilterByDate.vue";
 import OrdersFilterByStatus from "@/components/orders/OrdersFilterByStatus.vue";
 import OrdersFilterByAmount from "@/components/orders/OrdersFilterByAmount.vue";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
+import OrdersFilterByUser from "@/components/orders/OrdersFilterByUser.vue";
+import {useAuthStore} from "@/stores/useAuthStore.ts";
 
+const auth = useAuthStore();
 const orderStore = useOrdersStore();
 
 const resetFilters = () => {
@@ -21,6 +24,7 @@ const resetFilters = () => {
         <div class="flex items-center space-x-4">
           <OrdersFilterByStatus/>
           <OrdersFilterByDate/>
+          <OrdersFilterByUser v-if="auth.user?.is_admin"/>
           <OrdersFilterByAmount/>
           <button
             @click="resetFilters"

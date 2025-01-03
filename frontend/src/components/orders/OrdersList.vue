@@ -100,6 +100,7 @@ watch(
     <tr>
       <th scope="col" class="px-6 py-3">#</th>
       <th scope="col" class="px-6 py-3">Status</th>
+      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Customer ID</th>
       <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Customer</th>
       <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Email</th>
       <th scope="col" class="px-6 py-3">Products</th>
@@ -130,6 +131,7 @@ watch(
         {{ ordersStore.predefineStatuses.find(item => item.value === order.status)?.label }}
         </span>
       </td>
+      <td v-if="auth.user?.is_admin" class="px-6 py-4">{{ order.user.id }}</td>
       <td v-if="auth.user?.is_admin" class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ order.user.name }}</td>
       <td v-if="auth.user?.is_admin" class="px-6 py-4">{{ order.user.email }}</td>
       <td class="px-6 py-4">

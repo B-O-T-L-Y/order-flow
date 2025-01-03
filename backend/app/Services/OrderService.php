@@ -21,6 +21,10 @@ readonly class OrderService
 
             if (!$isAdmin) {
                 $query->where('user_id', $userId);
+            } else {
+                if (!empty($filters['user_id'])) {
+                    $query->where('user_id', $filters['user_id']);
+                }
             }
 
             // Filtering by status
@@ -106,7 +110,7 @@ readonly class OrderService
     {
         $version = Cache::rememberForever("user:{$userId}:orders_version", fn() => 1);
         $filterHash = md5(json_encode($filters));
-        $adminFlag = $isAdmin ? 'admin' : 'user';
+        $adminFlag = $isAdmin ? 'admin' : "user_{$userId}";
 
         return "orders:{$adminFlag}:orders:v{$version}:{$filterHash}:page={$page}";
     }

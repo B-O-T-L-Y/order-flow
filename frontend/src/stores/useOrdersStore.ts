@@ -15,6 +15,7 @@ export const useOrdersStore = defineStore('orders', () => {
   });
 
   const filters = reactive({
+    user_id: '',
     status: '',
     start_date: '',
     end_date: '',
@@ -45,6 +46,7 @@ export const useOrdersStore = defineStore('orders', () => {
     selectedRange.value = defaultRange;
 
     Object.assign(filters, {
+      user_id: '',
       status: '',
       start_date: defaultRange.start.toISOString().split('T')[0],
       end_date: defaultRange.end.toISOString().split('T')[0],
