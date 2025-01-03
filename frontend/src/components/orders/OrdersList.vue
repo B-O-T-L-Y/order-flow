@@ -98,16 +98,16 @@ watch(
   <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
     <tr>
-      <th scope="col" class="px-6 py-3">#</th>
-      <th scope="col" class="px-6 py-3">Status</th>
-      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Customer ID</th>
-      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Customer</th>
-      <th v-if="auth.user?.is_admin" scope="col" class="px-6 py-3">Email</th>
-      <th scope="col" class="px-6 py-3">Products</th>
-      <th scope="col" class="px-6 py-3">Amount</th>
-      <th scope="col" class="px-6 py-3">Created At</th>
-      <th scope="col" class="px-6 py-3">Updated At</th>
-      <th v-if="auth.user?.is_admin" scope="col" colspan="2" class="text-center px-6 py-3">Actions</th>
+      <th scope="col" class="px-2.5 py-3">#</th>
+      <th scope="col" class="px-2.5 py-3">Status</th>
+      <th v-if="auth.user?.is_admin" scope="col" class="px-2.5 py-3">Customer ID</th>
+      <th v-if="auth.user?.is_admin" scope="col" class="px-2.5 py-3">Customer</th>
+      <th v-if="auth.user?.is_admin" scope="col" class="px-2.5 py-3">Email</th>
+      <th scope="col" class="px-2.5 py-3">Products</th>
+      <th scope="col" class="px-2.5 py-3">Amount</th>
+      <th scope="col" class="px-2.5 py-3">Created At</th>
+      <th scope="col" class="px-2.5 py-3">Updated At</th>
+      <th v-if="auth.user?.is_admin" scope="col" colspan="2" class="text-center px-2.5 py-3">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -117,8 +117,8 @@ watch(
       :class="{'border-b': index !== orders.length - 1}"
       class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
     >
-      <td class="px-6 py-4">{{ order.id }}</td>
-      <td class="px-6 py-4">
+      <td class="px-2.5 py-4">{{ order.id }}</td>
+      <td class="px-2.5 py-4">
         <span
           class="px-3 py-1 rounded-full text-xs font-semibold"
           :class="{
@@ -131,10 +131,10 @@ watch(
         {{ ordersStore.predefineStatuses.find(item => item.value === order.status)?.label }}
         </span>
       </td>
-      <td v-if="auth.user?.is_admin" class="px-6 py-4">{{ order.user.id }}</td>
-      <td v-if="auth.user?.is_admin" class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ order.user.name }}</td>
-      <td v-if="auth.user?.is_admin" class="px-6 py-4">{{ order.user.email }}</td>
-      <td class="px-6 py-4">
+      <td v-if="auth.user?.is_admin" class="px-2.5 py-4">{{ order.user.id }}</td>
+      <td v-if="auth.user?.is_admin" class="px-2.5 py-4 font-medium text-gray-900 dark:text-white">{{ order.user.name }}</td>
+      <td v-if="auth.user?.is_admin" class="px-2.5 py-4">{{ order.user.email }}</td>
+      <td class="px-2.5 py-4">
         <ul class="space-y-2">
           <li
             v-for="product in (expendedOrderId === order.id ? order.products : order.products.slice(0, 2))"
@@ -155,10 +155,10 @@ watch(
           {{ expendedOrderId === order.id ? 'Hide Details' : `Show All products (${order.products.length})` }}
         </button>
       </td>
-      <td class="px-6 py-4">{{ order.amount }}</td>
-      <td class="px-6 py-4">{{ new Date(order.created_at).toUTCString() }}</td>
-      <td class="px-6 py-4">{{ new Date(order.updated_at).toUTCString() }}</td>
-      <td v-if="auth.user?.is_admin" class="px-6 py-4">
+      <td class="px-2.5 py-4">{{ order.amount }}</td>
+      <td class="px-2.5 py-4">{{ new Date(order.created_at).toUTCString() }}</td>
+      <td class="px-2.5 py-4">{{ new Date(order.updated_at).toUTCString() }}</td>
+      <td v-if="auth.user?.is_admin" class="px-2.5 py-4">
         <button
           @click="openEditForm(order)"
           class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
@@ -166,7 +166,7 @@ watch(
           Edit Order
         </button>
       </td>
-      <td v-if="auth.user?.is_admin" class="px-6 py-4">
+      <td v-if="auth.user?.is_admin" class="px-2.5 py-4">
         <button
           @click="openDeleteConfirmation(order.id)"
           class="font-medium text-red-600 dark:text-red-500 hover:underline"
