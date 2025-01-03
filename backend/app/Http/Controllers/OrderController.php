@@ -27,7 +27,9 @@ class OrderController extends Controller
     {
         $filters = $request->only(['status', 'start_date', 'end_date', 'min_amount', 'max_amount']);
         $page = request()->input('page', 1);
-        $orders = $this->orderService->getUserOrdersWithFilters($filters, $request->user()->id, $page);
+        $user = $request->user();
+        $orders = $this->orderService->getUserOrdersWithFilters($filters, $user->id, $user->is_admin, $page);
+
         return response()->json([
                 'message' => 'Orders retrieved successfully.',
                 'code' => 'ORDERS_FETCHED_SUCCESS'

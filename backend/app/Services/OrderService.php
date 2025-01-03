@@ -12,13 +12,16 @@ readonly class OrderService
 {
     private const CACHE_TTl = 3600;
 
-    public function getUserOrdersWithFilters(array $filters, int $userId, int $page = 1): LengthAwarePaginator
+    public function getUserOrdersWithFilters(array $filters, int $userId, bool $isAdmin, int $page = 1): LengthAwarePaginator
     {
-        $cacheKey = $this->generateCacheKey($filters, $userId, $page);
+        $cacheKey = $this->generateCacheKey($filters, $userId, $isAdmin, $page);
 
-        return Cache::remember($cacheKey, self::CACHE_TTl, function () use ($filters, $userId) {
-            $query = Order::where('user_id', $userId)
-                ->with(['products', 'user']);
+        return Cache::remember($cacheKey, self::CACHE_TTl, function () use ($filters, $userId, $isAdmin) {
+            $query = Order::with(['products', 'user']);
+
+            if (!$isAdmin) {
+                $query->where('user_id', $userId);
+            }
 
             // Filtering by status
             if (!empty($filters['status'])) {
@@ -99,11 +102,12 @@ readonly class OrderService
         Cache::increment("user:{$userId}:orders_version");
     }
 
-    private function generateCacheKey(array $filters, int $userId, int $page = 1): string
+    private function generateCacheKey(array $filters, int $userId, bool $isAdmin, int $page = 1): string
     {
         $version = Cache::rememberForever("user:{$userId}:orders_version", fn() => 1);
         $filterHash = md5(json_encode($filters));
+        $adminFlag = $isAdmin ? 'admin' : 'user';
 
-        return "user:{$userId}:orders:v{$version}:{$filterHash}:page={$page}";
+        return "orders:{$adminFlag}:orders:v{$version}:{$filterHash}:page={$page}";
     }
 }
