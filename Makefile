@@ -12,3 +12,6 @@ front:
 
 logs:
 	docker logs frontend -f
+
+echo:
+	docker compose exec echo sh

@@ -3,6 +3,7 @@ import {defineStore} from "pinia";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 import {reactive, ref} from "vue";
 import {useRouter} from "vue-router";
+import echo from "../echo";
 
 export const useOrdersStore = defineStore('orders', () => {
   const router = useRouter();
@@ -108,6 +109,22 @@ export const useOrdersStore = defineStore('orders', () => {
       console.log('Failed to delete order', error.value);
     }
   };
+
+  echo.private('orders')
+    .listen('.order.updated', (event: any) => {
+      console.log("[Websocket] Order Updated]", event);
+      const index = orders.value.findIndex(order => order.id === event.order.id);
+
+      if (index !== -1) {
+        orders.value[index] = event.order;
+      } else {
+        orders.value.unshift(event.order);
+      }
+    })
+    .listen('.order.created', (event: any) => {
+      console.log("[Websocket] Order Created]", event);
+      orders.value.unshift(event.order);
+    });
 
   return {
     orders,

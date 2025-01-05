@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\OrderStatusUpdated;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -88,6 +89,8 @@ readonly class OrderService
     public function updateOrderStatus(Order $order, string $status): Order
     {
         $order->update(['status' => $status]);
+
+        broadcast(new OrderStatusUpdated($order));
 
         $this->clearUserOrderCache($order->user_id);
 

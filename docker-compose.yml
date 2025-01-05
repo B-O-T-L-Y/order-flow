@@ -88,6 +88,40 @@ services:
     networks:
       - frontend
 
+  echo:
+    container_name: echo
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: docker/echo/Dockerfile
+    tty: true
+    ports:
+      - "6001:6001"
+    depends_on:
+      - backend
+      - redis
+    environment:
+      ECHO_AUTH_HOST: http://backend
+      ECHO_PORT: 6001
+      ECHO_REDIS_HOST: redis
+      ECHO_REDIS_PORT: 6379
+    networks:
+      - backend
+      - frontend
+
+  supervisor:
+    build:
+      context: .
+      dockerfile: docker/supervisor/Dockerfile
+    container_name: supervisor
+    restart: unless-stopped
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - backend
+      - redis
+    command: supervisord -c /etc/supervisord.conf
+
 networks:
   backend:
     driver: bridge
