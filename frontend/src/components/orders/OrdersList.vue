@@ -6,6 +6,7 @@ import OrdersDeleteConfirm from "@/components/orders/OrdersDeleteConfirm.vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 import OrderEditForm from "@/components/forms/OrderEditForm.vue";
 import {useRoute, useRouter} from "vue-router";
+import echo from "@/echo.ts";
 
 const route = useRoute();
 const router = useRouter();
@@ -83,6 +84,18 @@ const changePage = (page: number) => {
 onMounted(() => {
   ordersStore.setDefaultFilters();
   fetchOrders(props.page || 1);
+
+  echo.private('orders')
+    .listen('.order.updated', event => {
+      console.log('Order updated: ', event);
+    });
+
+  echo.channel('test-channel')
+    .listen('.test-event', (payload) => {
+      console.log('🔥 TestEvent payload:', payload);
+    });
+
+  console.log('Echo channel: ', echo.channel('test-channel'));
 });
 watch(
   () => route.params.page,
