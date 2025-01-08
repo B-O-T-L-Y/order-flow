@@ -52,11 +52,10 @@ RUN touch /var/log/supervisor/supervisord.log && \
     chown $user:$user /var/log/supervisor/supervisord.log
 
 # Copy Supervisor config
-COPY ./docker/php/supervisord.conf /etc/supervisord.conf
+COPY --chown=$user:$user ./docker/php/supervisord.conf /etc/supervisord.conf
 
 # Run entrypoints
 ENTRYPOINT ["sh", "./docker-entrypoint.sh"]
-CMD ["php-fpm"]
 
 # User
 USER $user

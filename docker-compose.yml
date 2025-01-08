@@ -38,6 +38,7 @@ services:
       - ./backend:/var/www/html
     depends_on:
       - mysql
+      - redis
     networks:
       - backend
 

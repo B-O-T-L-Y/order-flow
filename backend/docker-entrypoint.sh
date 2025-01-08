@@ -21,7 +21,4 @@ if [ -f "$file" ] ; then
   php artisan optimize
 fi
 
-supervisord -c /etc/supervisord.conf
-
-exec "$@"
-#php artisan serve --host=0.0.0.0
+exec supervisord -c /etc/supervisord.conf
