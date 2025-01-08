@@ -31,6 +31,8 @@ services:
       MYSQL_DATABASE: order_flow_db
       MYSQL_USER: order_flow_user
       MYSQL_PASSWORD: secret
+#    ports:
+#      - "8080:8080"
     tty: true
     volumes:
       - ./backend:/var/www/html
@@ -78,6 +80,11 @@ services:
     environment:
       VITE_BACKEND_URL: http://localhost:8000
       VITE_FRONTEND_URL: http://localhost:5173
+      VITE_REVERB_APP_ID: 729152
+      VITE_REVERB_APP_KEY: edypmdi239wlg1ufgyhms
+      VITE_REVERB_HOST: localhost
+      VITE_REVERB_PORT: 8000
+      VITE_REVERB_SCHEME: 'http'
     ports:
       - "5173:5173"
     tty: true
