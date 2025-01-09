@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
@@ -45,6 +46,8 @@ class OrderController extends Controller
         $userId = $request->user()->id;
         $order = $this->orderService->createOrder($request->validated(), $userId);
 
+        broadcast(new MessageSent('Order create' . $order->id));
+
         return response()->json([
             'data' => $order,
             'message' => 'Order created successfully.',
@@ -76,6 +79,8 @@ class OrderController extends Controller
     {
         $this->authorize('update', $order);
         $updateOrder = $this->orderService->updateOrderStatus($order, $request->input('status'));
+
+        broadcast(new MessageSent('Order update' . $order->id));
 
         return response()->json([
             'data' => $updateOrder,

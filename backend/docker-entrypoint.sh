@@ -2,6 +2,10 @@
 
 set -e
 
+cd /var/www/html
+
+supervisord -c /etc/supervisord.conf &
+
 echo "Composer install..."
 composer install
 
@@ -21,4 +25,4 @@ if [ -f "$file" ] ; then
   php artisan optimize
 fi
 
-exec supervisord -c /etc/supervisord.conf
+wait
