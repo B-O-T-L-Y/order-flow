@@ -15,6 +15,17 @@ const resetFilters = () => {
   orderStore.setDefaultFilters();
   orderStore.fetchOrders();
 };
+
+window.Echo.private(`orders`)
+  .listen('.order.created', data => {
+    console.log('Order Created', data);
+  })
+  .listen('.order.deleted', data => {
+    console.log('Order Deleted', data)
+  })
+  .listen('.order.status.updated', data => {
+    console.log('Order Status Updated', data);
+  });
 </script>
 
 <template>

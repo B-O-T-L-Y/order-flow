@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\MessageSent;
+use App\Events\OrderCreated;
+use App\Events\OrderDeleted;
+use App\Events\OrderStatusUpdated;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
@@ -17,7 +19,9 @@ class OrderController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(private readonly OrderService $orderService)
+    public function __construct(
+        private readonly OrderService $orderService
+    )
     {
     }
 
@@ -46,7 +50,7 @@ class OrderController extends Controller
         $userId = $request->user()->id;
         $order = $this->orderService->createOrder($request->validated(), $userId);
 
-        broadcast(new MessageSent('Order create' . $order->id));
+        broadcast(new OrderCreated($order))->toOthers();
 
         return response()->json([
             'data' => $order,
@@ -80,7 +84,7 @@ class OrderController extends Controller
         $this->authorize('update', $order);
         $updateOrder = $this->orderService->updateOrderStatus($order, $request->input('status'));
 
-        broadcast(new MessageSent('Order update' . $order->id));
+        broadcast(new OrderStatusUpdated($updateOrder))->toOthers();
 
         return response()->json([
             'data' => $updateOrder,
@@ -97,6 +101,8 @@ class OrderController extends Controller
     {
         $this->authorize('delete', $order);
         $this->orderService->deleteOrder($order);
+
+        broadcast(new OrderDeleted($order->id, $order->user_id))->toOthers();
 
         return response()->json([
             'data' => null,

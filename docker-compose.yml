@@ -81,6 +81,7 @@ services:
     environment:
       VITE_BACKEND_URL: http://localhost:8000
       VITE_FRONTEND_URL: http://localhost:5173
+      VITE_REVERB_AUTH_ENDPOINT: /broadcasting/auth
       VITE_REVERB_APP_ID: 729152
       VITE_REVERB_APP_KEY: edypmdi239wlg1ufgyhms
       VITE_REVERB_HOST: localhost
