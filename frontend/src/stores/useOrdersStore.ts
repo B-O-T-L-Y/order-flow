@@ -107,6 +107,8 @@ export const useOrdersStore = defineStore('orders', () => {
     } else {
       console.log('Failed to delete order', error.value);
     }
+
+    return {error};
   };
 
   return {

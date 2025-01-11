@@ -32,8 +32,7 @@ class OrderCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-//            new PrivateChannel('orders.' . $this->order->user_id),
-            new PrivateChannel('orders'),
+            new PrivateChannel('orders.' . $this->order->user_id),
             new PrivateChannel('admin.orders'),
         ];
     }

@@ -27,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withBroadcasting(
         __DIR__ . '/../routes/channels.php',
-        ['middleware' => ['api', 'auth:sanctum']],
+        ['prefix' => 'api', 'middleware' => ['api', 'auth:sanctum']],
     )
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {

@@ -50,7 +50,7 @@ class OrderController extends Controller
         $userId = $request->user()->id;
         $order = $this->orderService->createOrder($request->validated(), $userId);
 
-        broadcast(new OrderCreated($order))->toOthers();
+        broadcast(new OrderCreated($order));
 
         return response()->json([
             'data' => $order,
@@ -84,7 +84,7 @@ class OrderController extends Controller
         $this->authorize('update', $order);
         $updateOrder = $this->orderService->updateOrderStatus($order, $request->input('status'));
 
-        broadcast(new OrderStatusUpdated($updateOrder))->toOthers();
+        broadcast(new OrderStatusUpdated($updateOrder));
 
         return response()->json([
             'data' => $updateOrder,
@@ -102,7 +102,7 @@ class OrderController extends Controller
         $this->authorize('delete', $order);
         $this->orderService->deleteOrder($order);
 
-        broadcast(new OrderDeleted($order->id, $order->user_id))->toOthers();
+        broadcast(new OrderDeleted($order->id, $order->user_id));
 
         return response()->json([
             'data' => null,

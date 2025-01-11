@@ -97,21 +97,24 @@ readonly class OrderService
     public function deleteOrder(Order $order): void
     {
         $order->delete();
-
         $this->clearUserOrderCache($order->user_id);
     }
 
     private function clearUserOrderCache(int $userId): void
     {
-        Cache::increment("user:{$userId}:orders_version");
+        $versionKey = 'user:user_%s:orders_version';
+
+        Cache::increment(sprintf($versionKey, $userId));
+        Cache::increment(sprintf($versionKey, 'admin'));
     }
 
     private function generateCacheKey(array $filters, int $userId, bool $isAdmin, int $page = 1): string
     {
-        $version = Cache::rememberForever("user:{$userId}:orders_version", fn() => 1);
-        $filterHash = md5(json_encode($filters));
-        $adminFlag = $isAdmin ? 'admin' : "user_{$userId}";
+        $userId = $isAdmin ? 'admin' : $userId;
 
-        return "orders:{$adminFlag}:orders:v{$version}:{$filterHash}:page={$page}";
+        $version = Cache::rememberForever("user:user_{$userId}:orders_version", fn() => 1);
+        $filterHash = md5(json_encode($filters));
+
+        return "orders:user_{$userId}:orders:v{$version}:{$filterHash}:page={$page}";
     }
 }

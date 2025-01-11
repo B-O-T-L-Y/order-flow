@@ -16,7 +16,7 @@ const resetFilters = () => {
   orderStore.fetchOrders();
 };
 
-window.Echo.private(`orders`)
+window.Echo.private(`orders.${auth.user.id}`)
   .listen('.order.created', data => {
     console.log('Order Created', data);
   })
