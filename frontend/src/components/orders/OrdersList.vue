@@ -84,7 +84,11 @@ onMounted(() => {
   fetchOrders(parseInt(route.params.page || 1));
 });
 
-onUnmounted(() => fetchOrders());
+onUnmounted(() => {
+  if (auth.user) {
+    fetchOrders();
+  }
+});
 
 watch(
   () => route.params.page,
