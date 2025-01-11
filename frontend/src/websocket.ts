@@ -1,6 +1,8 @@
 import Pusher from "pusher-js";
 import Echo from "laravel-echo";
 import {useApiFetch} from "@/composables/useApiFetch.ts";
+import {useAuthStore} from "@/stores/useAuthStore.ts";
+import {useToast} from "@/stores/useToast.ts";
 
 window.Pusher = Pusher;
 
@@ -31,3 +33,34 @@ window.Echo = new Echo({
     };
   },
 });
+
+let orderChannel: any = null;
+
+export const subscribeToOrders = () => {
+  const auth = useAuthStore();
+  const toast = useToast();
+
+  if (!auth.user) return;
+
+  const userId = auth.user?.id;
+  const isAdmin = auth.user?.is_admin;
+
+  if (isAdmin) {
+    return;
+  }
+
+  if (orderChannel) {
+    orderChannel.stopListening('.order.created');
+    window.Echo.leave(`orders.${userId}`);
+  }
+
+  window.Echo.leave(`orders.${userId}`);
+
+  orderChannel = window.Echo.private(`orders.${userId}`)
+    .listen('.order.created', (event: any) => {
+      console.log(`New order created. ID: ${event.order_id}`);
+      // toast.showToast(`New order created. ID: ${event.order_id}`, 'message');
+    });
+
+  return;
+};
