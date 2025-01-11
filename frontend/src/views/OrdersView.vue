@@ -26,6 +26,11 @@ window.Echo.private(`orders.${auth.user.id}`)
   .listen('.order.status.updated', data => {
     console.log('Order Status Updated', data);
   });
+
+window.Echo.private('admin.orders')
+  .listen('.order.created', data => {
+    console.log('Order Created', data);
+  });
 </script>
 
 <template>
