@@ -7,6 +7,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -90,11 +91,14 @@ class AuthController extends Controller
 
         if ($request->bearerToken()) {
             auth()->logout();
+//            Auth::logout(); // TODO: test this, may be it is most correctly
 
             return response()->json($success);
         }
 
         if ($request->session()) {
+            Auth::guard('web')->logout();
+
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 

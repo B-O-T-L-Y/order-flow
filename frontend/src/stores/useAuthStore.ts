@@ -12,6 +12,12 @@ export const useAuthStore = defineStore('auth', () => {
     isSessionVerified = true;
     const {data, error} = await useApiFetch('/api/user').json();
 
+    if (error.value || !data.value) {
+      user.value = null;
+
+      return;
+    }
+
     user.value = data.value.user as User
   };
 
