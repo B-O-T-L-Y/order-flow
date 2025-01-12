@@ -1,21 +1,19 @@
 import {defineStore} from "pinia";
 import {createTemplatePromise} from "@vueuse/core";
+import {markRaw} from "vue";
 
 export const useToast = defineStore('toast', () => {
-  const Toast = createTemplatePromise<ToastMessage>({
+  const ToastNotification = markRaw(createTemplatePromise<ToastMessage>({
     transition: {
       name: 'fade',
       appear: true,
-    }
-  });
+    },
+  }));
 
-  const showToast = async (message: string, type: "success" | "error" | "info"): Promise<void> => {
-    const result = await Toast.start(message);
-    console.log(result);
-  };
+  const showToast = async (message: string, type: "success" | "error" | "info"): Promise<void> => await ToastNotification.start(message, type);
 
   return {
-    Toast,
+    ToastNotification,
     showToast,
   };
 });

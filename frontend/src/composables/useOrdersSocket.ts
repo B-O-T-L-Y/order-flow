@@ -8,7 +8,7 @@ export const useOrdersSocket = () => {
   const {echo} = useWebSockets();
   const auth = useAuthStore();
   const orderStore = useOrdersStore();
-  // const toast = useToast();
+  const toast = useToast();
 
   watch(
     () => auth.user,
@@ -22,7 +22,7 @@ export const useOrdersSocket = () => {
       channel.listen('.order.created', (event: any) => {
         console.log(`[WebSocket] New Order: ${event.order_id}`);
         // orderStore.addOrder();
-        // toast.showToast(`New Order Created. ID: ${event.order_id}`, 'info');
+        toast.showToast(`New Order Created. ID: ${event.order_id}`, 'info');
       });
 
       channel.listen('.order.updated', (event: any) => {

@@ -7,6 +7,6 @@ useOrdersSocket();
 </script>
 
 <template>
-<!--  <ToastNotification/>-->
+  <ToastNotification/>
   <RouterView />
 </template>
