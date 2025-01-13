@@ -24,7 +24,7 @@ const fetchProducts = async (page: number = 1) => {
 const addCart = (product: Product) => {
   cartStore.addToCart(product);
 
-  toast.showToast(`Add <b>${product.name}</b> to cart.`, 'success');
+  toast.showToast(`Add <b>${product.name}</b> to cart.`, 'success', 2000);
 };
 
 watch(

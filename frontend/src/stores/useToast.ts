@@ -10,7 +10,9 @@ export const useToast = defineStore('toast', () => {
     },
   }));
 
-  const showToast = async (message: string, type: "success" | "error" | "info"): Promise<void> => await ToastNotification.start(message, type);
+  const showToast = async (message: string, type: "success" | "error" | "info", delay: number = 10000): Promise<void> => {
+    await ToastNotification.start(message, type, delay);
+  }
 
   return {
     ToastNotification,

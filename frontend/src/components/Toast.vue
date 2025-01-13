@@ -5,23 +5,23 @@ type DialogResult = 'ok' | 'cancel';
 
 const props = defineProps<{
   slotProps: {
-    resolve: (value: DialogResult | Promise<DialogResult>) => void
-    reject: (err: any) => void
-    args: [string]
-    isResolving: boolean
+    resolve: (value: DialogResult | Promise<DialogResult>) => void;
+    reject: (err: any) => void;
+    args: [string];
+    isResolving: boolean;
   }
 }>();
 
 onMounted(() => {
   setTimeout(() => {
     props.slotProps.resolve('ok')
-  }, 10000)
+  }, props.slotProps.args[2])
 });
 </script>
 
 <template>
   <div
-    class="pointer-events-auto flex items-center w-full max-w-xs p-4 text-gray-500 bg-white dark:text-gray-400 dark:bg-gray-800 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+    class="pointer-events-auto flex relative z-10 items-center w-full max-w-xs p-4 text-gray-500 bg-white dark:text-gray-400 dark:bg-gray-800 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
     role="alert"
   >
     <div
