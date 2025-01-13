@@ -21,7 +21,9 @@ const startCountdown = () => {
       countdown.value--;
     } else {
       clearInterval(countdownInterval!);
+
       success.value = false;
+
       router.push({path: '/orders', replace: true});
     }
   }, 1000);
@@ -79,6 +81,7 @@ const checkout = async () => {
 
   if (statusCode.value === 201) {
     success.value = true;
+
     await cartStore.clearCart();
 
     startCountdown();

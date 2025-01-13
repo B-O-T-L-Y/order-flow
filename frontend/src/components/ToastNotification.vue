@@ -6,9 +6,14 @@ const {ToastNotification} = useToast();
 </script>
 
 <template>
-  <ToastNotification v-slot="slotProps">
-    <Toast :slotProps="slotProps" />
-  </ToastNotification>
+  <div
+    class="pointer-events-none fixed flex flex-col-reverse space-y-4 space-y-reverse items-center w-full max-w-xs text-gray-500 divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-16 right-4 dark:text-gray-400 dark:divide-gray-700"
+    role="alert"
+  >
+      <ToastNotification v-slot="slotProps">
+        <Toast :slotProps="slotProps"/>
+      </ToastNotification>
+  </div>
 </template>
 
 <style scoped>

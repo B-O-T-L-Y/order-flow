@@ -33,6 +33,7 @@ class OrderStatusUpdated implements ShouldBroadcast
     {
         return [
             new PrivateChannel('orders.' . $this->order->user_id),
+            new PrivateChannel('admin.orders'),
         ];
     }
 
@@ -47,6 +48,6 @@ class OrderStatusUpdated implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'order.status.updated';
+        return 'order.updated';
     }
 }

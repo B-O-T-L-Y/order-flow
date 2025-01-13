@@ -3,13 +3,13 @@ import {onMounted, onUnmounted, ref, watch} from "vue";
 import {useCartStore} from "@/stores/useCartStore.ts";
 import {useProductsStore} from "@/stores/useProductsStore.ts";
 import {useRoute, useRouter} from "vue-router"
+import {useToast} from "@/stores/useToast.ts";
 
 const route = useRoute();
 const router = useRouter();
 const productsStore = useProductsStore();
 const cartStore = useCartStore();
-const cartProductName = ref<string | null>(null);
-const showSuccess = ref<boolean>(false);
+const toast = useToast();
 
 const fetchProducts = async (page: number = 1) => {
   if (page === 1 && route.params.page) {
@@ -24,13 +24,7 @@ const fetchProducts = async (page: number = 1) => {
 const addCart = (product: Product) => {
   cartStore.addToCart(product);
 
-  cartProductName.value = product.name;
-  showSuccess.value = true;
-
-  setTimeout(() => {
-    cartProductName.value = null;
-    showSuccess.value = false;
-  }, 3000);
+  toast.showToast(`Add <b>${product.name}</b> to cart.`, 'success');
 };
 
 watch(
@@ -48,14 +42,6 @@ onUnmounted(() => fetchProducts());
 </script>
 
 <template>
-  <transition name="fade">
-    <div
-      v-if="showSuccess"
-      class="fixed top-4 right-4 bg-green-100 text-green-800 px-4 py-2 rounded-lg shadow-lg">
-      Add <b>{{ cartProductName }}</b> to cart.
-    </div>
-  </transition>
-
   <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
     <div
       v-for="product in productsStore.products"

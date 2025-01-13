@@ -22,19 +22,19 @@ export const useOrdersSocket = () => {
       channel.listen('.order.created', (event: any) => {
         console.log(`[WebSocket] New Order: ${event.order_id}`);
         // orderStore.addOrder();
-        toast.showToast(`New Order Created. ID: ${event.order_id}`, 'info');
+        toast.showToast(`New Order Created. ID: ${event.order_id}`, 'success');
       });
 
       channel.listen('.order.updated', (event: any) => {
         console.log(`[WebSocket] Order Updated: ${event.order_id}`);
         // orderStore.updateOrder();
-        // toast.showToast(`Order Updated. ID: ${event.order_id}`, 'success');
+        toast.showToast(`Order Updated. ID: ${event.order_id}`, 'info');
       });
 
       channel.listen('.order.deleted', (event: any) => {
         console.log(`[WevScoket] Order Deleted: ${event.order_id}`);
         // orderStore.removeOrder();
-        // toast.showToast(`Order Deleted. ID: ${event.order_id}`);
+        toast.showToast(`Order Deleted. ID: ${event.order_id}`, 'error');
       });
     },
     {immediate: true},
