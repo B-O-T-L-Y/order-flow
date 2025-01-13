@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\OrderCreated;
 use App\Events\OrderDeleted;
-use App\Events\OrderStatusUpdated;
+use App\Events\OrderUpdated;
 use App\Http\Requests\OrderRequest;
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
@@ -84,7 +84,7 @@ class OrderController extends Controller
         $this->authorize('update', $order);
         $updateOrder = $this->orderService->updateOrderStatus($order, $request->input('status'));
 
-        broadcast(new OrderStatusUpdated($updateOrder));
+        broadcast(new OrderUpdated($updateOrder));
 
         return response()->json([
             'data' => $updateOrder,
