@@ -11,7 +11,7 @@ const props = defineProps({
   onCancel: Function,
 });
 
-const success = ref<boolean>(false);
+const success = ref(false);
 const countdown = ref<number>(10);
 let countdownInterval: ReturnType<typeof setInterval> | null = null;
 

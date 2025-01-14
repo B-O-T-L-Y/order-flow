@@ -9,7 +9,7 @@ const form = reactive<RegisterPayload>({
   password_confirmation: '',
 });
 const auth = useAuthStore();
-const agree = ref<boolean>(false);
+const agree = ref(false);
 const errors = ref<Record<string, string[]>>({});
 
 const register = async (): Promise<void> => {
