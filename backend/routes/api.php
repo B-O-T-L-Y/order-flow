@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
@@ -21,8 +22,10 @@ Route::controller(AuthController::class)->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     // Admins Routes
     Route::middleware('admin')->group(function () {
-//        Route::apiResource('/orders', OrderController::class);
         Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
+
+        Route::post('/exports', [ExportController::class, 'startExport']);
+        Route::get('/exports/download/{exportId}', [ExportController::class, 'downloadExport']);
     });
 
     // User Routes

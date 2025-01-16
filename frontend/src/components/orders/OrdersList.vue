@@ -12,6 +12,7 @@ const router = useRouter();
 const auth = useAuthStore();
 const ordersStore = useOrdersStore();
 const modalStore = useModalStore();
+const expendedOrderId = ref<number | null>(null);
 
 const openEditForm = (order) => {
   modalStore.openModal({
@@ -31,8 +32,6 @@ const openEditForm = (order) => {
     }
   });
 };
-
-const expendedOrderId = ref<number | null>(null);
 
 const toggleExpendedOrder = (orderId: number) => {
   expendedOrderId.value = expendedOrderId.value === orderId ? null : orderId;
@@ -104,6 +103,18 @@ watch(
   <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
     <tr>
+      <th scope="col" class="p-4">
+        <div class="flex items-center">
+          <input
+            @change="ordersStore.toggleAllSelected"
+            :checked="ordersStore.allSelected"
+            id="checkbox-all"
+            type="checkbox"
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-900 dark:border-gray-600"
+          >
+          <label for="checkbox-all" class="sr-only">checkbox</label>
+        </div>
+      </th>
       <th scope="col" class="px-2.5 py-3">#</th>
       <th scope="col" class="px-2.5 py-3">Status</th>
       <th v-if="auth.user?.is_admin" scope="col" class="px-2.5 py-3">Customer ID</th>
@@ -123,6 +134,18 @@ watch(
       :class="{'border-b': index !== orders.length - 1}"
       class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
     >
+      <td class="w-4 p-4">
+        <div class="flex items-center">
+          <input
+            v-model="ordersStore.selectedOrders"
+            :value="order.id"
+            :id="`checkbox-table-${index}`"
+            type="checkbox"
+            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          >
+          <label :for="`checkbox-table-${index}`" class="sr-only">checkbox</label>
+        </div>
+      </td>
       <td class="px-2.5 py-4">{{ order.id }}</td>
       <td class="px-2.5 py-4">
         <span

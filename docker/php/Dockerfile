@@ -43,7 +43,6 @@ COPY --chown=$user:$user ./backend /var/www/html
 # Make docker-entrypoint.sh as executable
 RUN chmod u+x ./docker-entrypoint.sh
 
-
 # Create necessary directories and set ownership
 RUN mkdir -p /var/log/supervisor /var/run/supervisor /var/run && \
     chown -R $user:$user /var/log/supervisor /var/run/supervisor /var/run

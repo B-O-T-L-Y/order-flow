@@ -57,6 +57,12 @@ return [
             'throw' => false,
         ],
 
+        'exports' => [
+            'driver' => 'local',
+            'root' => storage_path('app/exports'),
+            'visibility' => 'private',
+            'throw' => false,
+        ],
     ],
 
     /*

@@ -14,9 +14,6 @@ class OrderDeleted implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct(
         public readonly int $orderId,
         public readonly int $userId,
@@ -24,11 +21,6 @@ class OrderDeleted implements ShouldBroadcast
     {
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
     public function broadcastOn(): array
     {
         return [

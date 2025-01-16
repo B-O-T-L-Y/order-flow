@@ -1,13 +1,14 @@
 import {useApiFetch} from "@/composables/useApiFetch.ts";
 import {defineStore} from "pinia";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
-import {reactive, ref} from "vue";
+import {computed, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 
 export const useOrdersStore = defineStore('orders', () => {
   const router = useRouter();
   const auth = useAuthStore();
   const orders = ref([]);
+  const selectedOrders = ref<number[]>([])
 
   const pagination = ref({
     currentPage: 1,
@@ -111,6 +112,16 @@ export const useOrdersStore = defineStore('orders', () => {
     return {error};
   };
 
+  const allSelected = computed(() => selectedOrders.value.length === orders.value.length);
+
+  const toggleAllSelected = () => {
+    if (allSelected.value) {
+      selectedOrders.value = [];
+    } else {
+      selectedOrders.value = orders.value.map(order => order.id);
+    }
+  };
+
   return {
     orders,
     pagination,
@@ -118,9 +129,12 @@ export const useOrdersStore = defineStore('orders', () => {
     predefineStatuses,
     predefinedDateRanges,
     selectedRange,
+    selectedOrders,
+    allSelected,
     updateOrder,
     fetchOrders,
     setDefaultFilters,
     deleteOrder,
+    toggleAllSelected,
   };
 });

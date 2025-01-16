@@ -7,6 +7,7 @@ import OrdersFilterByAmount from "@/components/orders/OrdersFilterByAmount.vue";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
 import OrdersFilterByUser from "@/components/orders/OrdersFilterByUser.vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
+import ExportButtons from "@/components/orders/exports/ExportButtons.vue";
 
 const auth = useAuthStore();
 const orderStore = useOrdersStore();
@@ -33,6 +34,7 @@ const resetFilters = () => {
             Reset Filters
           </button>
         </div>
+        <ExportButtons/>
       </div>
       <OrdersList/>
     </div>
