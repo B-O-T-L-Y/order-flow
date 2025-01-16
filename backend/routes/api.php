@@ -24,8 +24,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware('admin')->group(function () {
         Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
 
-        Route::post('/exports', [ExportController::class, 'startExport']);
+        Route::get('/exports', [ExportController::class, 'index']);
         Route::get('/exports/download/{exportId}', [ExportController::class, 'downloadExport']);
+        Route::post('/exports', [ExportController::class, 'startExport']);
     });
 
     // User Routes

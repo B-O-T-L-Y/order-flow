@@ -13,6 +13,15 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
 {
+    public function index(Request $request): JsonResponse
+    {
+        $exports = Export::where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json(['data' => $exports]);
+    }
+
     public function startExport(ExportRequest $request): JsonResponse
     {
         $user = $request->user();
@@ -35,7 +44,7 @@ class ExportController extends Controller
         ]);
     }
 
-    public function downloadExport($exportId): StreamedResponse
+    public function downloadExport(int $exportId): StreamedResponse
     {
         $export = Export::where('id', $exportId)
             ->where('user_id', auth()->id())

@@ -13,7 +13,7 @@ export const useExportStore = () => {
   const fetchExports = async (): Promise<void> => {
     const {data} = await useApiFetch('/api/exports/').json();
 
-    exports.value = data.value;
+    exports.value = data.value.data;
   };
 
   const startExport = async (format: ExportOrders, selectedOrders: number[]): Promise<void> => {

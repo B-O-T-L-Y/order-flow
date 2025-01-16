@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useExportStore} from "@/stores/useExportStore.ts";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
+import {onMounted} from "vue";
 
 const exportStore = useExportStore();
 const ordersStore = useOrdersStore();
@@ -8,10 +9,15 @@ const ordersStore = useOrdersStore();
 const startExportOrders = async (format: ExportOrders) => {
   if (ordersStore.selectedOrders.length > 0) {
     await exportStore.startExport(format, ordersStore.selectedOrders);
+    await exportStore.fetchExports();
   }
 };
 
 const getDownloadUrl = (exportId: number) => `${import.meta.env.VITE_BACKEND_URL}/api/exports/download/${exportId}`;
+
+onMounted(() => {
+  exportStore.fetchExports();
+});
 </script>
 
 <template>
@@ -31,11 +37,17 @@ const getDownloadUrl = (exportId: number) => `${import.meta.env.VITE_BACKEND_URL
       Export XLSX
     </button>
   </div>
-  <div v-if="exportStore.exports.length">
+  <div v-if="exportStore.exports.value" class="text-white">
     <h3>Available Exports</h3>
     <ul>
-      <li v-for="exportItem in exportStore.exports" :key="exportItem.id">
-        <a :href="getDownloadUrl(exportItem.id)">Download {{ exportItem.format.toUpperCase() }}</a>
+      <li v-for="exportItem in exportStore.exports.value" :key="exportItem.id">
+        <a
+          :href="getDownloadUrl(exportItem.id)"
+          class=""
+          target="_blank"
+        >
+          Download {{ exportItem.format.toUpperCase() }} ({{ new Date(exportItem.created_at).toLocaleString() }})
+        </a>
       </li>
     </ul>
   </div>
