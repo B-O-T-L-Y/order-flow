@@ -27,6 +27,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Export whereUserId($value)
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Export whereUpdatedAt($value)
+ * @property int $progress
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Export whereProgress($value)
+ * @property int $total
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Export whereTotal($value)
  * @mixin \Eloquent
  */
 class Export extends Model
@@ -39,5 +43,7 @@ class Export extends Model
         'file_path',
         'format',
         'status',
+        'progress',
+        'total',
     ];
 }

@@ -12,7 +12,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ExportCompleted implements ShouldBroadcast
+class ExportFailed implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -27,6 +27,6 @@ class ExportCompleted implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'export.completed';
+        return 'export.failed';
     }
 }

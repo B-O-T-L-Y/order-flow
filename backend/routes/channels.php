@@ -9,3 +9,8 @@ Broadcast::channel('orders.{userId}', function ($user, $userId) {
 Broadcast::channel('admin.orders', function ($user) {
     return $user->is_admin;
 });
+
+
+Broadcast::channel('admin.exports', function ($user) {
+    return $user->is_admin;
+});

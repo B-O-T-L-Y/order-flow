@@ -12,11 +12,15 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ExportCompleted implements ShouldBroadcast
+class ExportProgress implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(public readonly Export $export)
+    public function __construct(
+        public readonly Export $export,
+        public readonly int $progress,
+        public readonly int $total,
+    )
     {
     }
 
@@ -27,6 +31,6 @@ class ExportCompleted implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'export.completed';
+        return 'export.progress';
     }
 }

@@ -16,7 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('file_path');
             $table->string('format');
-            $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'in_progress', 'completed', 'failed'])->default('pending');
+            $table->integer('progress')->default(0);
+            $table->integer('total')->default(0);
             $table->timestamps();
         });
     }

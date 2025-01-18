@@ -8,6 +8,7 @@ export const useOrdersSocket = () => {
   const {echo} = useWebSockets();
   const auth = useAuthStore();
   const orderStore = useOrdersStore();
+
   let channel = null;
 
   watch(

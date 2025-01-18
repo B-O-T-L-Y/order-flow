@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import {useExportStore} from "@/stores/useExportStore.ts";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
-import {onMounted} from "vue";
+import {onMounted, ref} from "vue";
 
 const exportStore = useExportStore();
 const ordersStore = useOrdersStore();
 
+const dropDownVisible = ref(false);
+
 const startExportOrders = async (format: ExportOrders) => {
   if (ordersStore.selectedOrders.length > 0) {
     await exportStore.startExport(format, ordersStore.selectedOrders);
-    await exportStore.fetchExports();
   }
 };
 
@@ -36,19 +37,55 @@ onMounted(() => {
     >
       Export XLSX
     </button>
-  </div>
-  <div v-if="exportStore.exports.value" class="text-white">
-    <h3>Available Exports</h3>
-    <ul>
-      <li v-for="exportItem in exportStore.exports.value" :key="exportItem.id">
-        <a
-          :href="getDownloadUrl(exportItem.id)"
-          class=""
-          target="_blank"
-        >
-          Download {{ exportItem.format.toUpperCase() }} ({{ new Date(exportItem.created_at).toLocaleString() }})
-        </a>
-      </li>
-    </ul>
+
+    <div v-if="exportStore.exportsList" class="relative">
+      <button
+        @click="dropDownVisible = !dropDownVisible"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        type="button"
+      >
+        Exports List
+        <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+        </svg>
+      </button>
+      <div
+        v-show="dropDownVisible"
+        class="absolute right-0 z-10 min-w-max h-[75vh] mt-2 overflow-y-auto bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+      >
+        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+          <li
+            v-for="exportItem in exportStore.exportsList"
+            :key="exportItem.id"
+            class="relative"
+          >
+            <a
+              v-if="exportItem.status === 'completed'"
+              :href="getDownloadUrl(exportItem.id)"
+              class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+              <span class="font-medium">{{ exportItem.progressed }} #{{ exportItem.id }}</span>
+              {{ exportItem.format.toUpperCase() }}
+              {{ new Date(exportItem.created_at).toLocaleString() }}
+              - Download
+            </a>
+            <div v-else class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+              <span class="font-medium">#{{ exportItem.id }}</span>
+              ({{ exportItem.status }})
+            </div>
+            <div
+              v-if="exportItem.status === 'in_progress'"
+              class="absolute bottom-0 w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700"
+            >
+              <div class="bg-blue-600 h-1.5 rounded-full dark:bg-blue-500" :style="{
+                width: exportItem.total
+                  ? ((exportItem.progressed / exportItem.total) * 100) + '%'
+                  : '0%'
+              }"></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
