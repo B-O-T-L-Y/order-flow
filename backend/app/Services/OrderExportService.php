@@ -33,7 +33,16 @@ class OrderExportService
             $writer->openToFile($fullPath);
 
             $writer->addRow(WriterEntityFactory::createRowFromArray([
-                'ID', 'User ID', 'Status', 'Amount', 'Created At', 'Updated At', 'Products',
+                'Order ID',
+                'User ID',
+                'Status',
+                'Order Amount',
+                'Product Name',
+                'Pivot Quantity',
+                'Pivot Price',
+                'Pivot Total Price',
+                'Created At',
+                'Updated At',
             ]));
 
             $query = Order::whereIn('id', $selectedOrders)->with(['products']);
@@ -46,15 +55,39 @@ class OrderExportService
 
             $query->chunk(1000, function ($orders) use ($writer, $total, &$processed, $export) {
                 foreach ($orders as $order) {
-                    $writer->addRow(WriterEntityFactory::createRowFromArray([
-                        $order->id,
-                        $order->user_id,
-                        $order->status,
-                        $order->amount,
-                        $order->created_at,
-                        $order->updated_at,
-                        $order->products->pluck('name')->implode(', '),
-                    ]));
+                    $products = $order->products;
+
+                    if ($products->count() === 0) {
+                        $writer->addRow(WriterEntityFactory::createRowFromArray([
+                            $order->id,
+                            $order->user_id,
+                            $order->status,
+                            $order->amount,
+                            '',
+                            '',
+                            '',
+                            '',
+                            $order->created_at->toDateTimeString(),
+                            $order->updated_at->toDateTimeString(),
+                            $order->products->pluck('name')->implode(', '),
+                        ]));
+                        continue;
+                    }
+
+                    foreach ($products as $product) {
+                        $writer->addRow(WriterEntityFactory::createRowFromArray([
+                            $order->id,
+                            $order->user_id,
+                            $order->status,
+                            $order->amount,
+                            $product->pivot->product_name,
+                            $product->pivot->quantity,
+                            $product->pivot->price,
+                            $product->pivot->total_price,
+                            $order->created_at->toDateTimeString(),
+                            $order->updated_at->toDateTimeString(),
+                        ]));
+                    }
                 }
 
                 $processed += $orders->count();
@@ -74,7 +107,7 @@ class OrderExportService
 
             broadcast(new ExportCompleted($export));
         } catch (\Throwable $e) {
-            \Log::error("Export #{$exportId} failed: ".$e->getMessage());
+            \Log::error("Export #{$exportId} failed: " . $e->getMessage());
 
             $export->update(['status' => 'failed']);
 

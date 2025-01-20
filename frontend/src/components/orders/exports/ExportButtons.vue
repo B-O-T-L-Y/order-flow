@@ -2,16 +2,23 @@
 import {useExportStore} from "@/stores/useExportStore.ts";
 import {useOrdersStore} from "@/stores/useOrdersStore.ts";
 import {onMounted, ref} from "vue";
+import {useToast} from "@/stores/useToast.ts";
 
 const exportStore = useExportStore();
 const ordersStore = useOrdersStore();
+const toast = useToast();
 
 const dropDownVisible = ref(false);
 
 const startExportOrders = async (format: ExportOrders) => {
   if (ordersStore.selectedOrders.length > 0) {
+    dropDownVisible.value = true;
     await exportStore.startExport(format, ordersStore.selectedOrders);
+
+    return;
   }
+
+  await toast.showToast('Select orders, please.', 'info');
 };
 
 const getDownloadUrl = (exportId: number) => `${import.meta.env.VITE_BACKEND_URL}/api/exports/download/${exportId}`;
@@ -51,9 +58,13 @@ onMounted(() => {
       </button>
       <div
         v-show="dropDownVisible"
-        class="absolute right-0 z-10 min-w-max h-[75vh] mt-2 overflow-y-auto bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+        class="absolute right-0 z-10 min-w-max max-h-[75vh] mt-2 overflow-y-auto bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
       >
-        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+        <ul
+          v-if="exportStore.exportsList.length"
+          class="py-2 text-sm text-gray-700 dark:text-gray-200"
+          aria-labelledby="dropdownDefaultButton"
+        >
           <li
             v-for="exportItem in exportStore.exportsList"
             :key="exportItem.id"
@@ -85,6 +96,9 @@ onMounted(() => {
             </div>
           </li>
         </ul>
+        <span v-else class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-700 dark:text-gray-200 dark:hover:text-white">
+          No Exports List
+        </span>
       </div>
     </div>
   </div>
