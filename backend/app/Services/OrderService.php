@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -47,6 +48,40 @@ readonly class OrderService
 
             return $query->paginate(10);
         });
+    }
+
+    public function getAllFilteredOrdersQuery(array $filters, int $userId, bool $isAdmin): Builder
+    {
+        $query = Order::with(['products', 'user']);
+
+        if (!$isAdmin) {
+            $query->where('user_id', $userId);
+        } else {
+            if (!empty($filters['user_id'])) {
+                $query->where('user_id', $filters['user_id']);
+            }
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+            $query->whereBetween(DB::raw('DATE(created_at)'), [
+                $filters['start_date'],
+                $filters['end_date']
+            ]);
+        }
+
+        if (!empty($filters['min_amount'])) {
+            $query->where('amount', '>=', $filters['min_amount']);
+        }
+
+        if (!empty($filters['max_amount'])) {
+            $query->where('amount', '<=', $filters['max_amount']);
+        }
+
+        return $query;
     }
 
     /**

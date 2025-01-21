@@ -4,6 +4,7 @@ import {useToast} from "@/stores/useToast.ts";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 import {useWebSockets} from "@/composables/useWebSockets.ts";
 import {defineStore} from "pinia";
+import {data} from "autoprefixer";
 
 export const useExportStore = defineStore('exportStore', () => {
   const auth = useAuthStore();
@@ -25,12 +26,31 @@ export const useExportStore = defineStore('exportStore', () => {
     exportsMap.value = newMap;
   };
 
-  const startExport = async (format: ExportOrders, selectedOrders: number[]): Promise<void> => {
-    await useApiFetch('/api/exports', {
+  const startExport = async (payload: ExportPayload): Promise<void> => {
+    const {data, error, statusCode} = await useApiFetch('/api/exports', {
       headers: {'Content-Type': 'application/json'},
       method: 'POST',
-      body: JSON.stringify({format, selected_orders: selectedOrders}),
+      body: JSON.stringify({
+        format: payload.format,
+        select_all: payload.selectAll,
+        selected_orders: payload.selectedOrders,
+        excluded_orders: payload.excludedOrders,
+      }),
     }).json();
+
+    if (statusCode.value === 422 && error.value) {
+      await toast.showToast(error.value.body.error.details.data_selected[0], 'error');
+
+      return;
+    }
+
+    if (statusCode.value === 200 && data?.value?.message) {
+      await toast.showToast(data.value.message, 'success');
+
+      return;
+    }
+
+    await toast.showToast('Failed to start export.', 'error');
   };
 
   const exportsList = computed<ExportItem[]>(() => Object.values(exportsMap.value).sort((a, b) => {

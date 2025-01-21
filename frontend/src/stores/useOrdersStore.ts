@@ -9,6 +9,8 @@ export const useOrdersStore = defineStore('orders', () => {
   const auth = useAuthStore();
   const orders = ref([]);
   const selectedOrders = ref<number[]>([])
+  const selectAllGlobal = ref(false);
+  const excludedOrders = ref<number[]>([]);
 
   const pagination = ref({
     currentPage: 1,
@@ -112,13 +114,50 @@ export const useOrdersStore = defineStore('orders', () => {
     return {error};
   };
 
-  const allSelected = computed(() => selectedOrders.value.length === orders.value.length);
+  const allSelected = computed(() => {
+    if (orders.value.length === 0) return;
+
+    if (selectAllGlobal.value) {
+      return orders.value.every(order => !excludedOrders.value.includes(order.id));
+    }
+
+    return selectedOrders.value.length === orders.value.length;
+  });
 
   const toggleAllSelected = () => {
-    if (allSelected.value) {
+    const nextValue = !selectAllGlobal.value;
+    selectAllGlobal.value = nextValue;
+
+    if (nextValue) {
       selectedOrders.value = [];
+      excludedOrders.value = [];
     } else {
-      selectedOrders.value = orders.value.map(order => order.id);
+      selectedOrders.value = [];
+      excludedOrders.value = [];
+    }
+  };
+
+  const toggleOneOrders = (orderId: number) => {
+    if (!selectAllGlobal.value) {
+      if (selectedOrders.value.includes(orderId)) {
+        selectedOrders.value = selectedOrders.value.filter(id => id !== orderId);
+      } else {
+        selectedOrders.value.push(orderId);
+      }
+    } else {
+      if (excludedOrders.value.includes(orderId)) {
+        excludedOrders.value = excludedOrders.value.filter(id => id !== orderId);
+      } else {
+        excludedOrders.value.push(orderId);
+      }
+    }
+  };
+
+  const isOrderSelected = (orderId: number): boolean => {
+    if (!selectAllGlobal.value) {
+      return selectedOrders.value.includes(orderId);
+    } else {
+      return !excludedOrders.value.includes(orderId);
     }
   };
 
@@ -129,12 +168,19 @@ export const useOrdersStore = defineStore('orders', () => {
     predefineStatuses,
     predefinedDateRanges,
     selectedRange,
+
     selectedOrders,
+    selectAllGlobal,
+    excludedOrders,
+
     allSelected,
+    toggleAllSelected,
+    toggleOneOrders,
+    isOrderSelected,
+
     updateOrder,
     fetchOrders,
     setDefaultFilters,
     deleteOrder,
-    toggleAllSelected,
   };
 });

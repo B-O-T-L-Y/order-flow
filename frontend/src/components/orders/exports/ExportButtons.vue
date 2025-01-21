@@ -10,15 +10,24 @@ const toast = useToast();
 
 const dropDownVisible = ref(false);
 
-const startExportOrders = async (format: ExportOrders) => {
-  if (ordersStore.selectedOrders.length > 0) {
-    dropDownVisible.value = true;
-    await exportStore.startExport(format, ordersStore.selectedOrders);
+const startExportOrders = async (format: ExportPayload) => {
+  dropDownVisible.value = true;
 
-    return;
+  if (ordersStore.selectAllGlobal) {
+    await exportStore.startExport({
+      format,
+      selectAll: true,
+      selectedOrders: [],
+      excludedOrders: ordersStore.excludedOrders,
+    });
+  } else {
+    await exportStore.startExport({
+      format,
+      selectAll: false,
+      selectedOrders: ordersStore.selectedOrders,
+      excludedOrders: [],
+    });
   }
-
-  await toast.showToast('Select orders, please.', 'info');
 };
 
 const getDownloadUrl = (exportId: number) => `${import.meta.env.VITE_BACKEND_URL}/api/exports/download/${exportId}`;

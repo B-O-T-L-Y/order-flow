@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ExportRequest;
 use App\Jobs\ExportOrdersJob;
 use App\Models\Export;
+use App\Models\Order;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -22,11 +24,13 @@ class ExportController extends Controller
         return response()->json(['data' => $exports]);
     }
 
-    public function startExport(ExportRequest $request): JsonResponse
+    public function startExport(ExportRequest $request, OrderService $orderService): JsonResponse
     {
         $user = $request->user();
         $format = $request->input('format', 'csv');
+        $selectAll = $request->boolean('select_all');
         $selectedOrders = $request->input('selected_orders', []);
+        $excludesOrders = $request->input('excluded_orders', []);
 
         $export = Export::create([
             'user_id' => $user->id,
@@ -35,7 +39,23 @@ class ExportController extends Controller
             'status' => 'pending'
         ]);
 
-        dispatch(new ExportOrdersJob($export->id, $selectedOrders));
+        if ($selectAll) {
+            $filters = $request->only(['user_id', 'status', 'start_date', 'end_date', 'min_amount', 'max_amount']);
+
+            /** @var Order $query */
+            $query = $orderService->getAllFilteredOrdersQuery($filters, $user->id, $user->is_admin);
+
+            if (!empty($excludesOrders)) {
+                $query->whereNotIn('id', $excludesOrders);
+            }
+
+            $finalIds = $query->pluck('id')->toArray();
+        } else {
+            $finalIds = $selectedOrders;
+        }
+
+
+        dispatch(new ExportOrdersJob($export->id, $finalIds));
 
         return response()->json([
             'message' => 'Export running successfully',
