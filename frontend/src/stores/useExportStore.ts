@@ -45,14 +45,14 @@ export const useExportStore = defineStore('exportStore', () => {
       }),
     }).json();
 
-    if (statusCode.value === 422 && error.value) {
-      await toast.showToast(error.value.body.error.details.data_selected[0], 'error');
+    if (statusCode.value === 200 && data?.value?.message) {
+      await toast.showToast(data.value.message, 'success', 2000);
 
       return;
     }
 
-    if (statusCode.value === 200 && data?.value?.message) {
-      await toast.showToast(data.value.message, 'success');
+    if (statusCode.value === 422 && error.value) {
+      await toast.showToast(error.value.body.error.details.data_selected[0], 'error');
 
       return;
     }

@@ -117,9 +117,9 @@ onMounted(() => {
               v-if="exportItem.status === 'in_progress'"
               class="absolute bottom-0 w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700"
             >
-              <div class="bg-blue-600 h-1.5 rounded-full dark:bg-blue-500" :style="{
+              <div class="bg-blue-600 h-1.5 rounded-full dark:bg-blue-500 duration-500 ease-in" :style="{
                 width: exportItem.total
-                  ? ((exportItem.progressed / exportItem.total) * 100) + '%'
+                  ? ((exportItem.progress / exportItem.total) * 100) + '%'
                   : '0%'
               }"></div>
             </div>
