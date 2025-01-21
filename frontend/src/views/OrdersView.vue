@@ -34,7 +34,7 @@ const resetFilters = () => {
             Reset Filters
           </button>
         </div>
-        <ExportButtons/>
+        <ExportButtons v-if="auth?.user?.is_admin"/>
       </div>
       <OrdersList/>
     </div>
