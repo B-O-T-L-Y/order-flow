@@ -27,14 +27,14 @@ const addCart = (product: Product) => {
   toast.showToast(`Add <b>${product.name}</b> to cart.`, 'success', 2000);
 };
 
-watch(
-  () => route.params.page,
-  () => {
-    const pageNum = parseInt(route.params.page as string) || 1;
-
-    if (pageNum !== productsStore.pagination.currentPage) fetchProducts(pageNum);
-  }
-);
+// watch(
+//   () => route.params.page,
+//   () => {
+//     const pageNum = parseInt(route.params.page as string) || 1;
+//
+//     if (pageNum !== productsStore.pagination.currentPage) fetchProducts(pageNum);
+//   }
+// );
 
 onMounted(() => fetchProducts(parseInt(route.params.page || 1)));
 
@@ -68,7 +68,7 @@ onUnmounted(() => fetchProducts());
     aria-label="Page navigation example"
     class="mt-4"
   >
-    <ul class="inline-flex -space-x-px text-sm">
+    <ul class="inline-flex overflow-x-auto w-full -space-x-px text-sm">
       <li>
         <button
           @click="fetchProducts(productsStore.pagination.currentPage - 1)"

@@ -89,14 +89,14 @@ onUnmounted(() => {
   }
 });
 
-watch(
-  () => route.params.page,
-  () => {
-    const pageNum = parseInt(route.params.page as string) || 1;
-
-    if (pageNum !== ordersStore.pagination.currentPage) fetchOrders(pageNum);
-  }
-);
+// watch(
+//   () => route.params.page,
+//   () => {
+//     const pageNum = parseInt(route.params.page as string) || 1;
+//
+//     if (pageNum !== ordersStore.pagination.currentPage) fetchOrders(pageNum);
+//   }
+// );
 </script>
 
 <template>
@@ -211,7 +211,7 @@ watch(
     aria-label="Page navigation example"
     class="mt-4"
   >
-    <ul class="inline-flex -space-x-px text-sm">
+    <ul class="inline-flex overflow-x-auto w-full -space-x-px text-sm">
       <li>
         <button
           @click="changePage(ordersStore.pagination.currentPage - 1)"
