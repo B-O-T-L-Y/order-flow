@@ -35,6 +35,13 @@ export const useExportStore = defineStore('exportStore', () => {
         select_all: payload.selectAll,
         selected_orders: payload.selectedOrders,
         excluded_orders: payload.excludedOrders,
+
+        user_id: payload.user_id,
+        status: payload.status,
+        start_date: payload.start_date,
+        end_date: payload.end_date,
+        min_amount: payload.min_amount,
+        max_amount: payload.max_amount,
       }),
     }).json();
 

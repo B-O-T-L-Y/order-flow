@@ -19,6 +19,13 @@ const startExportOrders = async (format: ExportPayload) => {
       selectAll: true,
       selectedOrders: [],
       excludedOrders: ordersStore.excludedOrders,
+
+      user_id: ordersStore.filters.user_id,
+      status: ordersStore.filters.status,
+      start_date: ordersStore.filters.start_date,
+      end_date: ordersStore.filters.end_date,
+      min_amount: ordersStore.filters.min_amount,
+      max_amount: ordersStore.filters.max_amount,
     });
   } else {
     await exportStore.startExport({
@@ -26,6 +33,13 @@ const startExportOrders = async (format: ExportPayload) => {
       selectAll: false,
       selectedOrders: ordersStore.selectedOrders,
       excludedOrders: [],
+
+      user_id: ordersStore.filters.user_id,
+      status: ordersStore.filters.status,
+      start_date: ordersStore.filters.start_date,
+      end_date: ordersStore.filters.end_date,
+      min_amount: ordersStore.filters.min_amount,
+      max_amount: ordersStore.filters.max_amount,
     });
   }
 };
