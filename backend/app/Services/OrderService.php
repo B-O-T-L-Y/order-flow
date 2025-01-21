@@ -46,7 +46,7 @@ readonly class OrderService
                 $query->where('amount', '<=', $filters['max_amount']);
             }
 
-            return $query->paginate(10);
+            return $query->paginate(50);
         });
     }
 
