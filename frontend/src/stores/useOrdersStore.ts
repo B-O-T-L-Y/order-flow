@@ -161,6 +161,12 @@ export const useOrdersStore = defineStore('orders', () => {
     }
   };
 
+  const resetExportSelection = () => {
+    selectAllGlobal.value = false;
+    selectedOrders.value = [];
+    excludedOrders.value = [];
+  };
+
   return {
     orders,
     pagination,
@@ -177,6 +183,7 @@ export const useOrdersStore = defineStore('orders', () => {
     toggleAllSelected,
     toggleOneOrders,
     isOrderSelected,
+    resetExportSelection,
 
     updateOrder,
     fetchOrders,
