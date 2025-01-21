@@ -8,7 +8,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::paginate(18);
+        $products = Product::paginate(48);
 
         return response()->json([
                 'message' => 'Products retrieved successfully.',
