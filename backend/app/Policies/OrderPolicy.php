@@ -13,6 +13,11 @@ class OrderPolicy
         return $user->is_admin || $user->id === $order->user_id;
     }
 
+    public function create(User $user): bool
+    {
+        return true;
+    }
+
     public function update(User $user, Order $order): bool
     {
         return $user->is_admin || $user->id === $order->user_id;

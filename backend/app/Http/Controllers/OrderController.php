@@ -42,11 +42,13 @@ class OrderController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @throws AuthorizationException
      * @throws \Throwable
      */
     public function store(StoreOrderRequest $request): JsonResponse
     {
+        $this->authorize('create', Order::class);
+
         $userId = $request->user()->id;
         $order = $this->orderService->createOrder($request->validated(), $userId);
 
@@ -82,6 +84,7 @@ class OrderController extends Controller
     public function update(OrderRequest $request, Order $order): JsonResponse
     {
         $this->authorize('update', $order);
+
         $updateOrder = $this->orderService->updateOrderStatus($order, $request->input('status'));
 
         broadcast(new OrderUpdated($updateOrder));
@@ -100,6 +103,7 @@ class OrderController extends Controller
     public function destroy(Order $order): JsonResponse
     {
         $this->authorize('delete', $order);
+
         $this->orderService->deleteOrder($order);
 
         broadcast(new OrderDeleted($order->id, $order->user_id));

@@ -7,6 +7,8 @@ use App\Jobs\ExportOrdersJob;
 use App\Models\Export;
 use App\Models\Order;
 use App\Services\OrderService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,6 +17,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request): JsonResponse
     {
         $exports = Export::where('user_id', $request->user()->id)
@@ -24,8 +28,13 @@ class ExportController extends Controller
         return response()->json(['data' => $exports]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function startExport(ExportRequest $request, OrderService $orderService): JsonResponse
     {
+        $this->authorize('create', Export::class);
+
         $user = $request->user();
         $format = $request->input('format', 'csv');
         $selectAll = $request->boolean('select_all');
@@ -64,11 +73,16 @@ class ExportController extends Controller
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function downloadExport(int $exportId): StreamedResponse
     {
         $export = Export::where('id', $exportId)
             ->where('user_id', auth()->id())
             ->firstOrFail();
+
+        $this->authorize('view', $export);
 
         if (!Storage::disk('exports')->exists($export->file_path)) {
             abort(404, 'Export file not found.');
