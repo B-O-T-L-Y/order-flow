@@ -87,7 +87,7 @@ onMounted(() => {
       </button>
       <div
         v-show="dropDownVisible"
-        class="absolute right-0 z-10 min-w-max max-h-[75vh] mt-2 overflow-y-auto bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+        class="absolute right-0 z-10 min-w-max max-h-[75vh] mt-2 overflow-y-auto bg-white border border-gray-200 divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:bg-gray-800 dark:border-gray-700"
       >
         <ul
           v-if="exportStore.exportsList.length"
