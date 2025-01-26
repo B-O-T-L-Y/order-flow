@@ -2,9 +2,7 @@ import {computed, onMounted, ref, watchEffect} from "vue";
 import {useApiFetch} from "@/composables/useApiFetch.ts";
 import {useToast} from "@/stores/useToast.ts";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
-import {useWebSockets} from "@/composables/useWebSockets.ts";
 import {defineStore} from "pinia";
-import {data} from "autoprefixer";
 
 export const useExportStore = defineStore('exportStore', () => {
   const auth = useAuthStore();
