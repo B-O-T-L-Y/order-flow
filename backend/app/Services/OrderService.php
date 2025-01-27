@@ -93,6 +93,7 @@ readonly class OrderService
             $order = Order::create([
                 'user_id' => $userId,
                 'status' => 'new',
+                'amount' => 0,
             ]);
 
             $amount = 0;

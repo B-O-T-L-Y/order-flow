@@ -3,6 +3,8 @@
 namespace Tests\Unit;
 
 use App\Events\OrderCreated;
+use App\Events\OrderDeleted;
+use App\Events\OrderUpdated;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -117,5 +119,80 @@ class OrderControllerTest extends TestCase
         ]);
 
         Event::assertDispatched(OrderCreated::class);
+    }
+
+    public function test_user_can_update_their_order_status(): void
+    {
+        Event::fake();
+
+        $admin = User::factory()->admin()->create();
+        $order = Order::factory()->create(['user_id' => $admin->id]);
+
+        $token = $admin->createToken('test_token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->patchJson('/api/orders/' . $order->id, [
+                'status' => 'processing',
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['status' => 'processing']);
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => 'processing',
+        ]);
+
+        Event::assertDispatched(OrderUpdated::class);
+    }
+
+    public function test_user_cannot_update_other_users_order(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $order = Order::factory()->create(['user_id' => $otherUser->id]);
+
+        $token = $user->createToken('test_token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->patchJson('/api/orders/' . $order->id, [
+                'status' => 'processing',
+            ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_can_delete_any_order(): void
+    {
+        Event::fake();
+
+        $admin = User::factory()->admin()->create();
+        $order = Order::factory()->create();
+
+        $token = $admin->createToken('test_token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->deleteJson('/api/orders/' . $order->id);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('orders', [
+            'id' => $order->id,
+        ]);
+
+        Event::assertDispatched(OrderDeleted::class);
+    }
+
+    public function test_user_cannot_delete_order(): void
+    {
+        $user = User::factory()->create();
+        $order = Order::factory()->create();
+
+        $token = $user->createToken('test_token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->deleteJson('/api/orders/' . $order->id);
+
+        $response->assertStatus(403);
     }
 }

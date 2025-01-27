@@ -90,8 +90,7 @@ class AuthController extends Controller
         ];
 
         if ($request->bearerToken()) {
-            auth()->logout();
-//            Auth::logout(); // TODO: test this, may be it is most correctly
+            $request->user()->currentAccessToken()->delete();
 
             return response()->json($success);
         }

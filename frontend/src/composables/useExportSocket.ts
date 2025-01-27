@@ -35,7 +35,7 @@ export const useExportSocket = () => {
 
           exportStore.updateExport(newExp);
 
-          console.log('[WebSocket] Export Progress: ',  exp.id, progress, total);
+          // console.log('[WebSocket] Export Progress: ',  exp.id, progress, total);
         });
 
         channel.listen('.export.completed', (payload: any) => {

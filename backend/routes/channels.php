@@ -10,7 +10,6 @@ Broadcast::channel('admin.orders', function ($user) {
     return $user->is_admin;
 });
 
-
 Broadcast::channel('admin.exports', function ($user) {
     return $user->is_admin;
 });
