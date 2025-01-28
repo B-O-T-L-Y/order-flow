@@ -16,4 +16,9 @@ class ExportPolicy
     {
         return $user->is_admin;
     }
+
+    public function download(User $user, Export $export): bool
+    {
+        return $user->is_admin;
+    }
 }

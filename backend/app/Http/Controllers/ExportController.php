@@ -12,7 +12,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
@@ -82,7 +81,7 @@ class ExportController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        $this->authorize('view', $export);
+        $this->authorize('download', $export);
 
         if (!Storage::disk('exports')->exists($export->file_path)) {
             abort(404, 'Export file not found.');
