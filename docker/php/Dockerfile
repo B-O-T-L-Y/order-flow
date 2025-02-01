@@ -40,6 +40,8 @@ WORKDIR /var/www/html
 COPY --chown=$user:$user ./backend /var/www/html
 #COPY ./docker/php/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 
+RUN cp .env.example .env
+
 # Make docker-entrypoint.sh as executable
 RUN chmod u+x ./docker-entrypoint.sh
 
