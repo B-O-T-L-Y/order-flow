@@ -27,6 +27,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/exports', [ExportController::class, 'index']);
         Route::get('/exports/download/{exportId}', [ExportController::class, 'downloadExport']);
         Route::post('/exports', [ExportController::class, 'startExport']);
+
+        Route::get('/docs', function () {
+            $path = storage_path('api-docs/api-docs.json');
+
+            if (!file_exists($path)) {
+                return response()->json([
+                    'error' => 'API documentation not found. Run `php artisan l5-swagger:generate`'
+                ], 404);
+            }
+
+            return Response::file($path, [
+                'Content-Type' => 'application/json'
+            ]);
+        });
     });
 
     // User Routes

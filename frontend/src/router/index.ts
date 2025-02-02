@@ -8,6 +8,7 @@ import LoginView from "@/views/LoginView.vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 import ProductsView from "@/views/ProductsView.vue";
 import CheckoutView from "@/views/CheckoutView.vue";
+import SwaggerUIView from "@/views/SwaggerUIView.vue";
 
 async function auth(to: RouteLocation, from: RouteLocation) {
   const auth = useAuthStore();
@@ -80,6 +81,11 @@ const router = createRouter({
           path: 'orders',
           name: 'Orders',
           component: OrdersView,
+        },
+        {
+          path: "docs",
+          name: "SwaggerUI",
+          component: SwaggerUIView
         },
         {
           path: 'orders/:page(\\d+)?',

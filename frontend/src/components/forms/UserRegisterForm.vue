@@ -15,7 +15,7 @@ const errors = ref<Record<string, string[]>>({});
 const register = async (): Promise<void> => {
   const {error} = await auth.register(form);
 
-  console.log(error)
+  // console.log(error)
   // if (error) {
   //   errors.value = error.response.data.errors;
   // }

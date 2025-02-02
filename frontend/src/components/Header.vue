@@ -45,6 +45,14 @@ const openModalStore = () => {
                 Orders
               </RouterLink>
             </li>
+            <li v-if="auth.user && auth.user.is_admin">
+              <RouterLink
+                to="/docs" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
+                aria-current="page"
+              >
+                Documentation
+              </RouterLink>
+            </li>
             <li v-if="!auth.user">
               <RouterLink
                 to="/register" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
