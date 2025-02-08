@@ -29,14 +29,13 @@ onMounted(() => {
 <template>
   <div class="swagger-container">
     <div ref="swaggerContainer"></div>
-<!--    <div id="#swagger-ui"></div>-->
   </div>
 </template>
 
 <style>
 .swagger-container {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   background-color: white;
 }
 </style>

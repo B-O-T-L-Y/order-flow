@@ -18,17 +18,20 @@ class AuthController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name","email","password"},
+     *             required={"name", "email", "password", "password_confirmation"},
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="secret")
+     *             @OA\Property(property="password", type="string", format="password", example="secret"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="secret"),
      *         )
      *     ),
      *     @OA\Response(response=201, description="User registered successfully"),
      *     @OA\Response(response=422, description="Validation error")
      * )
      */
-    public function register() {}
+    public function register()
+    {
+    }
 
     /**
      * @OA\Post(
@@ -38,16 +41,19 @@ class AuthController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"email","password"},
+     *             required={"email","password","password_confirmation"},
      *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="secret")
+     *             @OA\Property(property="password", type="string", format="password", example="secret"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password, example="secret"),
      *         )
      *     ),
      *     @OA\Response(response=200, description="Login successful"),
      *     @OA\Response(response=401, description="Invalid credentials")
      * )
      */
-    public function login() {}
+    public function login()
+    {
+    }
 
     /**
      * @OA\Get(
@@ -59,7 +65,9 @@ class AuthController
      *     @OA\Response(response=401, description="Unauthenticated")
      * )
      */
-    public function user() {}
+    public function user()
+    {
+    }
 
     /**
      * @OA\Post(
@@ -71,5 +79,7 @@ class AuthController
      *     @OA\Response(response=401, description="Unauthenticated")
      * )
      */
-    public function logout() {}
+    public function logout()
+    {
+    }
 }
